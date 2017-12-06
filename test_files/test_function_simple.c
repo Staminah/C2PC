@@ -1,0 +1,4 @@
+void showHello()
+{
+  int i;
+}

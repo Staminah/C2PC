@@ -1,0 +1,445 @@
+Created by PLY version 3.10 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    SHORT
+    CHAR
+    DOUBLE
+    FLOAT
+    INT
+    LONG
+    VOID
+    IF
+    ELSE
+    FOR
+    WHILE
+    RETURN
+    COMMA
+    LBRACE
+    RBRACE
+    GREATER
+    LESS
+    EQ
+    NOT_EQ
+    GREATER_EQ
+    LESS_EQ
+    MODULO
+    CARET
+    DOT
+    EQ_PLUS
+    EQ_MINUS
+    EQ_TIMES
+    EQ_DIV
+    STRING
+    CHARACTER
+
+Grammar
+
+Rule 0     S' -> programme
+Rule 1     programme -> statement SEMICOLON
+Rule 2     programme -> statement SEMICOLON programme
+Rule 3     statement -> assignation
+Rule 4     assignation -> ID ASSIGN expression
+Rule 5     expression -> ID
+Rule 6     expression -> INUMBER
+Rule 7     expression -> FNUMBER
+Rule 8     expression -> LPAREN expression RPAREN
+Rule 9     expression -> expression PLUS expression
+Rule 10    expression -> expression MINUS expression
+Rule 11    expression -> expression TIMES expression
+Rule 12    expression -> expression DIV expression
+
+Terminals, with rules where they appear
+
+ASSIGN               : 4
+CARET                : 
+CHAR                 : 
+CHARACTER            : 
+COMMA                : 
+DIV                  : 12
+DOT                  : 
+DOUBLE               : 
+ELSE                 : 
+EQ                   : 
+EQ_DIV               : 
+EQ_MINUS             : 
+EQ_PLUS              : 
+EQ_TIMES             : 
+FLOAT                : 
+FNUMBER              : 7
+FOR                  : 
+GREATER              : 
+GREATER_EQ           : 
+ID                   : 4 5
+IF                   : 
+INT                  : 
+INUMBER              : 6
+LBRACE               : 
+LESS                 : 
+LESS_EQ              : 
+LONG                 : 
+LPAREN               : 8
+MINUS                : 10
+MODULO               : 
+NOT_EQ               : 
+PLUS                 : 9
+RBRACE               : 
+RETURN               : 
+RPAREN               : 8
+SEMICOLON            : 1 2
+SHORT                : 
+STRING               : 
+TIMES                : 11
+VOID                 : 
+WHILE                : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+assignation          : 3
+expression           : 4 8 9 9 10 10 11 11 12 12
+programme            : 2 0
+statement            : 1 2
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . programme
+    (1) programme -> . statement SEMICOLON
+    (2) programme -> . statement SEMICOLON programme
+    (3) statement -> . assignation
+    (4) assignation -> . ID ASSIGN expression
+
+    ID              shift and go to state 4
+
+    programme                      shift and go to state 1
+    statement                      shift and go to state 2
+    assignation                    shift and go to state 3
+
+state 1
+
+    (0) S' -> programme .
+
+
+
+state 2
+
+    (1) programme -> statement . SEMICOLON
+    (2) programme -> statement . SEMICOLON programme
+
+    SEMICOLON       shift and go to state 5
+
+
+state 3
+
+    (3) statement -> assignation .
+
+    SEMICOLON       reduce using rule 3 (statement -> assignation .)
+
+
+state 4
+
+    (4) assignation -> ID . ASSIGN expression
+
+    ASSIGN          shift and go to state 6
+
+
+state 5
+
+    (1) programme -> statement SEMICOLON .
+    (2) programme -> statement SEMICOLON . programme
+    (1) programme -> . statement SEMICOLON
+    (2) programme -> . statement SEMICOLON programme
+    (3) statement -> . assignation
+    (4) assignation -> . ID ASSIGN expression
+
+    $end            reduce using rule 1 (programme -> statement SEMICOLON .)
+    ID              shift and go to state 4
+
+    statement                      shift and go to state 2
+    programme                      shift and go to state 7
+    assignation                    shift and go to state 3
+
+state 6
+
+    (4) assignation -> ID ASSIGN . expression
+    (5) expression -> . ID
+    (6) expression -> . INUMBER
+    (7) expression -> . FNUMBER
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS expression
+    (11) expression -> . expression TIMES expression
+    (12) expression -> . expression DIV expression
+
+    ID              shift and go to state 8
+    INUMBER         shift and go to state 10
+    FNUMBER         shift and go to state 11
+    LPAREN          shift and go to state 12
+
+    expression                     shift and go to state 9
+
+state 7
+
+    (2) programme -> statement SEMICOLON programme .
+
+    $end            reduce using rule 2 (programme -> statement SEMICOLON programme .)
+
+
+state 8
+
+    (5) expression -> ID .
+
+    PLUS            reduce using rule 5 (expression -> ID .)
+    MINUS           reduce using rule 5 (expression -> ID .)
+    TIMES           reduce using rule 5 (expression -> ID .)
+    DIV             reduce using rule 5 (expression -> ID .)
+    SEMICOLON       reduce using rule 5 (expression -> ID .)
+    RPAREN          reduce using rule 5 (expression -> ID .)
+
+
+state 9
+
+    (4) assignation -> ID ASSIGN expression .
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS expression
+    (11) expression -> expression . TIMES expression
+    (12) expression -> expression . DIV expression
+
+    SEMICOLON       reduce using rule 4 (assignation -> ID ASSIGN expression .)
+    PLUS            shift and go to state 13
+    MINUS           shift and go to state 14
+    TIMES           shift and go to state 15
+    DIV             shift and go to state 16
+
+
+state 10
+
+    (6) expression -> INUMBER .
+
+    PLUS            reduce using rule 6 (expression -> INUMBER .)
+    MINUS           reduce using rule 6 (expression -> INUMBER .)
+    TIMES           reduce using rule 6 (expression -> INUMBER .)
+    DIV             reduce using rule 6 (expression -> INUMBER .)
+    SEMICOLON       reduce using rule 6 (expression -> INUMBER .)
+    RPAREN          reduce using rule 6 (expression -> INUMBER .)
+
+
+state 11
+
+    (7) expression -> FNUMBER .
+
+    PLUS            reduce using rule 7 (expression -> FNUMBER .)
+    MINUS           reduce using rule 7 (expression -> FNUMBER .)
+    TIMES           reduce using rule 7 (expression -> FNUMBER .)
+    DIV             reduce using rule 7 (expression -> FNUMBER .)
+    SEMICOLON       reduce using rule 7 (expression -> FNUMBER .)
+    RPAREN          reduce using rule 7 (expression -> FNUMBER .)
+
+
+state 12
+
+    (8) expression -> LPAREN . expression RPAREN
+    (5) expression -> . ID
+    (6) expression -> . INUMBER
+    (7) expression -> . FNUMBER
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS expression
+    (11) expression -> . expression TIMES expression
+    (12) expression -> . expression DIV expression
+
+    ID              shift and go to state 8
+    INUMBER         shift and go to state 10
+    FNUMBER         shift and go to state 11
+    LPAREN          shift and go to state 12
+
+    expression                     shift and go to state 17
+
+state 13
+
+    (9) expression -> expression PLUS . expression
+    (5) expression -> . ID
+    (6) expression -> . INUMBER
+    (7) expression -> . FNUMBER
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS expression
+    (11) expression -> . expression TIMES expression
+    (12) expression -> . expression DIV expression
+
+    ID              shift and go to state 8
+    INUMBER         shift and go to state 10
+    FNUMBER         shift and go to state 11
+    LPAREN          shift and go to state 12
+
+    expression                     shift and go to state 18
+
+state 14
+
+    (10) expression -> expression MINUS . expression
+    (5) expression -> . ID
+    (6) expression -> . INUMBER
+    (7) expression -> . FNUMBER
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS expression
+    (11) expression -> . expression TIMES expression
+    (12) expression -> . expression DIV expression
+
+    ID              shift and go to state 8
+    INUMBER         shift and go to state 10
+    FNUMBER         shift and go to state 11
+    LPAREN          shift and go to state 12
+
+    expression                     shift and go to state 19
+
+state 15
+
+    (11) expression -> expression TIMES . expression
+    (5) expression -> . ID
+    (6) expression -> . INUMBER
+    (7) expression -> . FNUMBER
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS expression
+    (11) expression -> . expression TIMES expression
+    (12) expression -> . expression DIV expression
+
+    ID              shift and go to state 8
+    INUMBER         shift and go to state 10
+    FNUMBER         shift and go to state 11
+    LPAREN          shift and go to state 12
+
+    expression                     shift and go to state 20
+
+state 16
+
+    (12) expression -> expression DIV . expression
+    (5) expression -> . ID
+    (6) expression -> . INUMBER
+    (7) expression -> . FNUMBER
+    (8) expression -> . LPAREN expression RPAREN
+    (9) expression -> . expression PLUS expression
+    (10) expression -> . expression MINUS expression
+    (11) expression -> . expression TIMES expression
+    (12) expression -> . expression DIV expression
+
+    ID              shift and go to state 8
+    INUMBER         shift and go to state 10
+    FNUMBER         shift and go to state 11
+    LPAREN          shift and go to state 12
+
+    expression                     shift and go to state 21
+
+state 17
+
+    (8) expression -> LPAREN expression . RPAREN
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS expression
+    (11) expression -> expression . TIMES expression
+    (12) expression -> expression . DIV expression
+
+    RPAREN          shift and go to state 22
+    PLUS            shift and go to state 13
+    MINUS           shift and go to state 14
+    TIMES           shift and go to state 15
+    DIV             shift and go to state 16
+
+
+state 18
+
+    (9) expression -> expression PLUS expression .
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS expression
+    (11) expression -> expression . TIMES expression
+    (12) expression -> expression . DIV expression
+
+    PLUS            reduce using rule 9 (expression -> expression PLUS expression .)
+    SEMICOLON       reduce using rule 9 (expression -> expression PLUS expression .)
+    RPAREN          reduce using rule 9 (expression -> expression PLUS expression .)
+    MINUS           shift and go to state 14
+    TIMES           shift and go to state 15
+    DIV             shift and go to state 16
+
+  ! MINUS           [ reduce using rule 9 (expression -> expression PLUS expression .) ]
+  ! TIMES           [ reduce using rule 9 (expression -> expression PLUS expression .) ]
+  ! DIV             [ reduce using rule 9 (expression -> expression PLUS expression .) ]
+  ! PLUS            [ shift and go to state 13 ]
+
+
+state 19
+
+    (10) expression -> expression MINUS expression .
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS expression
+    (11) expression -> expression . TIMES expression
+    (12) expression -> expression . DIV expression
+
+    PLUS            reduce using rule 10 (expression -> expression MINUS expression .)
+    MINUS           reduce using rule 10 (expression -> expression MINUS expression .)
+    TIMES           reduce using rule 10 (expression -> expression MINUS expression .)
+    DIV             reduce using rule 10 (expression -> expression MINUS expression .)
+    SEMICOLON       reduce using rule 10 (expression -> expression MINUS expression .)
+    RPAREN          reduce using rule 10 (expression -> expression MINUS expression .)
+
+  ! PLUS            [ shift and go to state 13 ]
+  ! MINUS           [ shift and go to state 14 ]
+  ! TIMES           [ shift and go to state 15 ]
+  ! DIV             [ shift and go to state 16 ]
+
+
+state 20
+
+    (11) expression -> expression TIMES expression .
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS expression
+    (11) expression -> expression . TIMES expression
+    (12) expression -> expression . DIV expression
+
+    PLUS            reduce using rule 11 (expression -> expression TIMES expression .)
+    TIMES           reduce using rule 11 (expression -> expression TIMES expression .)
+    SEMICOLON       reduce using rule 11 (expression -> expression TIMES expression .)
+    RPAREN          reduce using rule 11 (expression -> expression TIMES expression .)
+    MINUS           shift and go to state 14
+    DIV             shift and go to state 16
+
+  ! MINUS           [ reduce using rule 11 (expression -> expression TIMES expression .) ]
+  ! DIV             [ reduce using rule 11 (expression -> expression TIMES expression .) ]
+  ! PLUS            [ shift and go to state 13 ]
+  ! TIMES           [ shift and go to state 15 ]
+
+
+state 21
+
+    (12) expression -> expression DIV expression .
+    (9) expression -> expression . PLUS expression
+    (10) expression -> expression . MINUS expression
+    (11) expression -> expression . TIMES expression
+    (12) expression -> expression . DIV expression
+
+    PLUS            reduce using rule 12 (expression -> expression DIV expression .)
+    TIMES           reduce using rule 12 (expression -> expression DIV expression .)
+    DIV             reduce using rule 12 (expression -> expression DIV expression .)
+    SEMICOLON       reduce using rule 12 (expression -> expression DIV expression .)
+    RPAREN          reduce using rule 12 (expression -> expression DIV expression .)
+    MINUS           shift and go to state 14
+
+  ! MINUS           [ reduce using rule 12 (expression -> expression DIV expression .) ]
+  ! PLUS            [ shift and go to state 13 ]
+  ! TIMES           [ shift and go to state 15 ]
+  ! DIV             [ shift and go to state 16 ]
+
+
+state 22
+
+    (8) expression -> LPAREN expression RPAREN .
+
+    PLUS            reduce using rule 8 (expression -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 8 (expression -> LPAREN expression RPAREN .)
+    TIMES           reduce using rule 8 (expression -> LPAREN expression RPAREN .)
+    DIV             reduce using rule 8 (expression -> LPAREN expression RPAREN .)
+    SEMICOLON       reduce using rule 8 (expression -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 8 (expression -> LPAREN expression RPAREN .)
+
