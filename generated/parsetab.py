@@ -5,9 +5,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'leftPLUSleftTIMESleftDIVleftMINUSSHORT CHAR DOUBLE FLOAT INT LONG VOID IF ELSE FOR WHILE RETURN COMMA SEMICOLON LPAREN RPAREN LBRACE RBRACE ASSIGN GREATER LESS EQ NOT_EQ GREATER_EQ LESS_EQ PLUS MINUS TIMES DIV MODULO CARET DOT EQ_PLUS EQ_MINUS EQ_TIMES EQ_DIV ID FNUMBER INUMBER STRING CHARACTER programme : statement SEMICOLON programme : statement SEMICOLON programme  statement : assignation  assignation : ID ASSIGN expression  expression : ID  expression : INUMBER\n        | FNUMBER expression : LPAREN expression RPARENexpression : expression PLUS expression\n    | expression MINUS expression\n    | expression TIMES expression\n    | expression DIV expression '
+_lr_signature = 'leftPLUSleftTIMESleftDIVleftMINUSSHORT CHAR DOUBLE FLOAT INT LONG VOID IF ELSE FOR WHILE RETURN COMMA SEMICOLON LPAREN RPAREN LBRACE RBRACE ASSIGN GREATER LESS EQ NOT_EQ GREATER_EQ LESS_EQ PLUS MINUS TIMES DIV MODULO CARET DOT EQ_PLUS EQ_MINUS EQ_TIMES EQ_DIV ID FNUMBER INUMBER STRING CHARACTER programme : statement  programme : statement programme  statement : assignation SEMICOLON\n        | iteration_statement\n        | compound_statement\n        | expression_statement expression_statement : expression SEMICOLONcompound_statement : LBRACE programme RBRACE iteration_statement : WHILE LPAREN expression RPAREN statement iteration_statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement assignation : ID ASSIGN expression  expression : ID  expression : INUMBER\n        | FNUMBER expression : LPAREN expression RPARENexpression : expression PLUS expression\n    | expression MINUS expression\n    | expression TIMES expression\n    | expression DIV expression '
     
-_lr_action_items = {'ID':([0,5,6,12,13,14,15,16,],[4,4,8,8,8,8,8,8,]),'$end':([1,5,7,],[0,-1,-2,]),'SEMICOLON':([2,3,8,9,10,11,18,19,20,21,22,],[5,-3,-5,-4,-6,-7,-9,-10,-11,-12,-8,]),'ASSIGN':([4,],[6,]),'INUMBER':([6,12,13,14,15,16,],[10,10,10,10,10,10,]),'FNUMBER':([6,12,13,14,15,16,],[11,11,11,11,11,11,]),'LPAREN':([6,12,13,14,15,16,],[12,12,12,12,12,12,]),'PLUS':([8,9,10,11,17,18,19,20,21,22,],[-5,13,-6,-7,13,-9,-10,-11,-12,-8,]),'MINUS':([8,9,10,11,17,18,19,20,21,22,],[-5,14,-6,-7,14,14,-10,14,14,-8,]),'TIMES':([8,9,10,11,17,18,19,20,21,22,],[-5,15,-6,-7,15,15,-10,-11,-12,-8,]),'DIV':([8,9,10,11,17,18,19,20,21,22,],[-5,16,-6,-7,16,16,-10,16,-12,-8,]),'RPAREN':([8,10,11,17,18,19,20,21,22,],[-5,-6,-7,22,-9,-10,-11,-12,-8,]),}
+_lr_action_items = {'ID':([0,2,4,5,6,10,12,16,17,18,19,20,21,22,23,26,35,36,37,38,39,41,42,],[7,7,-4,-5,-6,25,7,-3,25,-7,25,25,25,25,25,25,25,-8,7,25,-9,7,-10,]),'WHILE':([0,2,4,5,6,12,16,18,36,37,39,41,42,],[9,9,-4,-5,-6,9,-3,-7,-8,9,-9,9,-10,]),'FOR':([0,2,4,5,6,12,16,18,36,37,39,41,42,],[11,11,-4,-5,-6,11,-3,-7,-8,11,-9,11,-10,]),'LBRACE':([0,2,4,5,6,12,16,18,36,37,39,41,42,],[12,12,-4,-5,-6,12,-3,-7,-8,12,-9,12,-10,]),'INUMBER':([0,2,4,5,6,10,12,16,17,18,19,20,21,22,23,26,35,36,37,38,39,41,42,],[13,13,-4,-5,-6,13,13,-3,13,-7,13,13,13,13,13,13,13,-8,13,13,-9,13,-10,]),'FNUMBER':([0,2,4,5,6,10,12,16,17,18,19,20,21,22,23,26,35,36,37,38,39,41,42,],[14,14,-4,-5,-6,14,14,-3,14,-7,14,14,14,14,14,14,14,-8,14,14,-9,14,-10,]),'LPAREN':([0,2,4,5,6,9,10,11,12,16,17,18,19,20,21,22,23,26,35,36,37,38,39,41,42,],[10,10,-4,-5,-6,23,10,26,10,-3,10,-7,10,10,10,10,10,10,10,-8,10,10,-9,10,-10,]),'$end':([1,2,4,5,6,15,16,18,36,39,42,],[0,-1,-4,-5,-6,-2,-3,-7,-8,-9,-10,]),'RBRACE':([2,4,5,6,15,16,18,27,36,39,42,],[-1,-4,-5,-6,-2,-3,-7,36,-8,-9,-10,]),'SEMICOLON':([3,7,8,13,14,25,28,29,30,31,32,34,],[16,-12,18,-13,-14,-12,-11,-16,-17,-18,-19,-15,]),'ASSIGN':([7,],[17,]),'PLUS':([7,8,13,14,24,25,28,29,30,31,32,33,34,40,],[-12,19,-13,-14,19,-12,19,-16,-17,-18,-19,19,-15,19,]),'MINUS':([7,8,13,14,24,25,28,29,30,31,32,33,34,40,],[-12,20,-13,-14,20,-12,20,20,-17,20,20,20,-15,20,]),'TIMES':([7,8,13,14,24,25,28,29,30,31,32,33,34,40,],[-12,21,-13,-14,21,-12,21,21,-17,-18,-19,21,-15,21,]),'DIV':([7,8,13,14,24,25,28,29,30,31,32,33,34,40,],[-12,22,-13,-14,22,-12,22,22,-17,22,-19,22,-15,22,]),'RPAREN':([13,14,24,25,29,30,31,32,33,34,40,],[-13,-14,34,-12,-16,-17,-18,-19,37,-15,41,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'programme':([0,5,],[1,7,]),'statement':([0,5,],[2,2,]),'assignation':([0,5,],[3,3,]),'expression':([6,12,13,14,15,16,],[9,17,18,19,20,21,]),}
+_lr_goto_items = {'programme':([0,2,12,],[1,15,27,]),'statement':([0,2,12,37,41,],[2,2,2,39,42,]),'assignation':([0,2,12,37,41,],[3,3,3,3,3,]),'iteration_statement':([0,2,12,37,41,],[4,4,4,4,4,]),'compound_statement':([0,2,12,37,41,],[5,5,5,5,5,]),'expression_statement':([0,2,12,26,35,37,41,],[6,6,6,35,38,6,6,]),'expression':([0,2,10,12,17,19,20,21,22,23,26,35,37,38,41,],[8,8,24,8,28,29,30,31,32,33,8,8,8,40,8,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,16 +26,23 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> programme","S'",1,None,None,None),
-  ('programme -> statement SEMICOLON','programme',2,'p_programme_statement','parser.py',16),
-  ('programme -> statement SEMICOLON programme','programme',3,'p_programme_recursive','parser.py',20),
-  ('statement -> assignation','statement',1,'p_statement','parser.py',24),
-  ('assignation -> ID ASSIGN expression','assignation',3,'p_assign','parser.py',33),
-  ('expression -> ID','expression',1,'p_expression_var','parser.py',37),
-  ('expression -> INUMBER','expression',1,'p_expression_num','parser.py',41),
-  ('expression -> FNUMBER','expression',1,'p_expression_num','parser.py',42),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_par','parser.py',46),
-  ('expression -> expression PLUS expression','expression',3,'p_expression_op','parser.py',50),
-  ('expression -> expression MINUS expression','expression',3,'p_expression_op','parser.py',51),
-  ('expression -> expression TIMES expression','expression',3,'p_expression_op','parser.py',52),
-  ('expression -> expression DIV expression','expression',3,'p_expression_op','parser.py',53),
+  ('programme -> statement','programme',1,'p_programme_statement','parser.py',16),
+  ('programme -> statement programme','programme',2,'p_programme_recursive','parser.py',20),
+  ('statement -> assignation SEMICOLON','statement',2,'p_statement','parser.py',24),
+  ('statement -> iteration_statement','statement',1,'p_statement','parser.py',25),
+  ('statement -> compound_statement','statement',1,'p_statement','parser.py',26),
+  ('statement -> expression_statement','statement',1,'p_statement','parser.py',27),
+  ('expression_statement -> expression SEMICOLON','expression_statement',2,'p_expression_statement','parser.py',31),
+  ('compound_statement -> LBRACE programme RBRACE','compound_statement',3,'p_compound_statement_01','parser.py',35),
+  ('iteration_statement -> WHILE LPAREN expression RPAREN statement','iteration_statement',5,'p_iteration_statement_01','parser.py',40),
+  ('iteration_statement -> FOR LPAREN expression_statement expression_statement expression RPAREN statement','iteration_statement',7,'p_iteration_statement_02','parser.py',44),
+  ('assignation -> ID ASSIGN expression','assignation',3,'p_assign','parser.py',48),
+  ('expression -> ID','expression',1,'p_expression_var','parser.py',52),
+  ('expression -> INUMBER','expression',1,'p_expression_num','parser.py',56),
+  ('expression -> FNUMBER','expression',1,'p_expression_num','parser.py',57),
+  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_par','parser.py',61),
+  ('expression -> expression PLUS expression','expression',3,'p_expression_op','parser.py',71),
+  ('expression -> expression MINUS expression','expression',3,'p_expression_op','parser.py',72),
+  ('expression -> expression TIMES expression','expression',3,'p_expression_op','parser.py',73),
+  ('expression -> expression DIV expression','expression',3,'p_expression_op','parser.py',74),
 ]

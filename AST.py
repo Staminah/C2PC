@@ -124,6 +124,9 @@ class PrintNode(Node):
 class WhileNode(Node):
     type = 'while'
 
+class ForNode(Node):
+    type = 'for'
+
 class EntryNode(Node):
     type = 'ENTRY'
     def __init__(self):

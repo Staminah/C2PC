@@ -13,21 +13,36 @@ precedence = (
 vars = {}
 
 def p_programme_statement(p):
-	''' programme : statement SEMICOLON'''
+	''' programme : statement '''
 	p[0] = AST.ProgramNode(p[1])
 
 def p_programme_recursive(p):
-	''' programme : statement SEMICOLON programme '''
-	p[0] = AST.ProgramNode([p[1]]+p[3].children)
+	''' programme : statement programme '''
+	p[0] = AST.ProgramNode([p[1]]+p[2].children)
 
 def p_statement(p):
-	''' statement : assignation '''
-         # | structure '''
+	''' statement : assignation SEMICOLON
+        | iteration_statement
+        | compound_statement
+        | expression_statement '''
 	p[0] = p[1]
 
-# def p_structure(p):
-#     ''' structure : WHILE expression LBRACE programme RBRACE '''
-#     p[0] = AST.WhileNode([p[2],p[4]])
+def p_expression_statement(p):
+    '''expression_statement : expression SEMICOLON'''
+    p[0] = p[1]
+
+def p_compound_statement_01(p):
+    '''compound_statement : LBRACE programme RBRACE'''
+    p[0] = p[2]
+
+
+def p_iteration_statement_01(p):
+    ''' iteration_statement : WHILE LPAREN expression RPAREN statement '''
+    p[0] = AST.WhileNode([p[3],p[5]])
+
+def p_iteration_statement_02(p):
+    '''iteration_statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement'''
+    p[0] = AST.ForNode([p[3], p[4], p[5], p[7]])
 
 def p_assign(p):
 	''' assignation : ID ASSIGN expression '''
@@ -45,6 +60,12 @@ def p_expression_num(p):
 def p_expression_par(p):
     '''expression : LPAREN expression RPAREN'''
     p[0] = p[2]
+
+# def p_type_specifier(t):
+#     '''type_specifier : INT
+#                       | CHAR
+#                       | FLOAT '''
+#     t[0] = BaseType(t[1])
 
 def p_expression_op(p):
     '''expression : expression PLUS expression
