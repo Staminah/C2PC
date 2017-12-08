@@ -86,7 +86,7 @@ def p_expression_op(p):
     p[0] = AST.OpNode(p[2], [p[1], p[3]])
 
 def p_expression_assign(p):
-    '''expression : relational_expression '''
+    '''expression : equality_expression '''
     p[0] = p[1]
 
 def p_relational_expression_01(p):
@@ -99,6 +99,15 @@ def p_relational_expression_02(p):
                              | relational_expression GREATER primary_expression
                              | relational_expression LESS_EQ primary_expression
                              | relational_expression GREATER_EQ primary_expression'''
+    p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
+
+def p_equality_expression_01(p):
+    '''equality_expression : relational_expression'''
+    p[0] = p[1]
+
+def p_equality_expression_02(p):
+    '''equality_expression : equality_expression EQ relational_expression
+                           | equality_expression NOT_EQ relational_expression'''
     p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
 
 

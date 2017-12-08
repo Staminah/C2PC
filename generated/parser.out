@@ -11,8 +11,6 @@ Unused terminals:
     VOID
     RETURN
     COMMA
-    EQ
-    NOT_EQ
     MODULO
     CARET
     DOT
@@ -47,13 +45,16 @@ Rule 18    expression -> primary_expression PLUS primary_expression
 Rule 19    expression -> primary_expression MINUS primary_expression
 Rule 20    expression -> primary_expression TIMES primary_expression
 Rule 21    expression -> primary_expression DIV primary_expression
-Rule 22    expression -> relational_expression
+Rule 22    expression -> equality_expression
 Rule 23    relational_expression -> primary_expression
 Rule 24    relational_expression -> assignation
 Rule 25    relational_expression -> relational_expression LESS primary_expression
 Rule 26    relational_expression -> relational_expression GREATER primary_expression
 Rule 27    relational_expression -> relational_expression LESS_EQ primary_expression
 Rule 28    relational_expression -> relational_expression GREATER_EQ primary_expression
+Rule 29    equality_expression -> relational_expression
+Rule 30    equality_expression -> equality_expression EQ relational_expression
+Rule 31    equality_expression -> equality_expression NOT_EQ relational_expression
 
 Terminals, with rules where they appear
 
@@ -66,7 +67,7 @@ DIV                  : 21
 DOT                  : 
 DOUBLE               : 
 ELSE                 : 12
-EQ                   : 
+EQ                   : 30
 EQ_DIV               : 
 EQ_MINUS             : 
 EQ_PLUS              : 
@@ -87,7 +88,7 @@ LONG                 :
 LPAREN               : 9 10 11 12 17
 MINUS                : 19
 MODULO               : 
-NOT_EQ               : 
+NOT_EQ               : 31
 PLUS                 : 18
 RBRACE               : 8
 RETURN               : 
@@ -104,12 +105,13 @@ Nonterminals, with rules where they appear
 
 assignation          : 24
 compound_statement   : 4
+equality_expression  : 22 30 31
 expression           : 7 9 10 11 12 13 17
 expression_statement : 5 10 10
 iteration_statement  : 3
 primary_expression   : 18 18 19 19 20 20 21 21 23 25 26 27 28
 programme            : 2 8 0
-relational_expression : 22 25 26 27 28
+relational_expression : 25 26 27 28 29 30 31
 selection_statement  : 6
 statement            : 1 2 9 10 11 12 12
 
@@ -134,11 +136,14 @@ state 0
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -164,8 +169,9 @@ state 0
     selection_statement            shift and go to state 6
     expression                     shift and go to state 9
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
 state 1
 
@@ -193,11 +199,14 @@ state 2
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -218,15 +227,16 @@ state 2
     LPAREN          shift and go to state 8
 
     statement                      shift and go to state 2
-    programme                      shift and go to state 19
+    programme                      shift and go to state 20
     iteration_statement            shift and go to state 3
     compound_statement             shift and go to state 4
     expression_statement           shift and go to state 5
     selection_statement            shift and go to state 6
     expression                     shift and go to state 9
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
 state 3
 
@@ -300,7 +310,7 @@ state 7
 
     (9) iteration_statement -> WHILE . LPAREN expression RPAREN statement
 
-    LPAREN          shift and go to state 20
+    LPAREN          shift and go to state 21
 
 
 state 8
@@ -310,11 +320,14 @@ state 8
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -328,23 +341,24 @@ state 8
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    expression                     shift and go to state 21
+    expression                     shift and go to state 22
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
 state 9
 
     (7) expression_statement -> expression . SEMICOLON
 
-    SEMICOLON       shift and go to state 22
+    SEMICOLON       shift and go to state 23
 
 
 state 10
 
     (10) iteration_statement -> FOR . LPAREN expression_statement expression_statement expression RPAREN statement
 
-    LPAREN          shift and go to state 23
+    LPAREN          shift and go to state 24
 
 
 state 11
@@ -366,11 +380,14 @@ state 11
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -388,7 +405,7 @@ state 11
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    programme                      shift and go to state 24
+    programme                      shift and go to state 25
     statement                      shift and go to state 2
     iteration_statement            shift and go to state 3
     compound_statement             shift and go to state 4
@@ -396,15 +413,16 @@ state 11
     selection_statement            shift and go to state 6
     expression                     shift and go to state 9
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
 state 12
 
     (11) selection_statement -> IF . LPAREN expression RPAREN statement
     (12) selection_statement -> IF . LPAREN expression RPAREN statement ELSE statement
 
-    LPAREN          shift and go to state 25
+    LPAREN          shift and go to state 26
 
 
 state 13
@@ -415,41 +433,39 @@ state 13
     (21) expression -> primary_expression . DIV primary_expression
     (23) relational_expression -> primary_expression .
 
-    PLUS            shift and go to state 26
-    MINUS           shift and go to state 27
-    TIMES           shift and go to state 28
-    DIV             shift and go to state 29
+    PLUS            shift and go to state 27
+    MINUS           shift and go to state 28
+    TIMES           shift and go to state 29
+    DIV             shift and go to state 30
     LESS            reduce using rule 23 (relational_expression -> primary_expression .)
     GREATER         reduce using rule 23 (relational_expression -> primary_expression .)
     LESS_EQ         reduce using rule 23 (relational_expression -> primary_expression .)
     GREATER_EQ      reduce using rule 23 (relational_expression -> primary_expression .)
+    EQ              reduce using rule 23 (relational_expression -> primary_expression .)
+    NOT_EQ          reduce using rule 23 (relational_expression -> primary_expression .)
     SEMICOLON       reduce using rule 23 (relational_expression -> primary_expression .)
     RPAREN          reduce using rule 23 (relational_expression -> primary_expression .)
 
 
 state 14
 
-    (22) expression -> relational_expression .
-    (25) relational_expression -> relational_expression . LESS primary_expression
-    (26) relational_expression -> relational_expression . GREATER primary_expression
-    (27) relational_expression -> relational_expression . LESS_EQ primary_expression
-    (28) relational_expression -> relational_expression . GREATER_EQ primary_expression
+    (22) expression -> equality_expression .
+    (30) equality_expression -> equality_expression . EQ relational_expression
+    (31) equality_expression -> equality_expression . NOT_EQ relational_expression
 
-  ! shift/reduce conflict for LESS resolved as shift
-  ! shift/reduce conflict for GREATER resolved as shift
-  ! shift/reduce conflict for LESS_EQ resolved as shift
-  ! shift/reduce conflict for GREATER_EQ resolved as shift
-    SEMICOLON       reduce using rule 22 (expression -> relational_expression .)
-    RPAREN          reduce using rule 22 (expression -> relational_expression .)
-    LESS            shift and go to state 30
-    GREATER         shift and go to state 31
-    LESS_EQ         shift and go to state 32
-    GREATER_EQ      shift and go to state 33
+  ! shift/reduce conflict for EQ resolved as shift
+  ! shift/reduce conflict for NOT_EQ resolved as shift
+    SEMICOLON       reduce using rule 22 (expression -> equality_expression .)
+    RPAREN          reduce using rule 22 (expression -> equality_expression .)
+    LESS            reduce using rule 22 (expression -> equality_expression .)
+    GREATER         reduce using rule 22 (expression -> equality_expression .)
+    LESS_EQ         reduce using rule 22 (expression -> equality_expression .)
+    GREATER_EQ      reduce using rule 22 (expression -> equality_expression .)
+    EQ              shift and go to state 31
+    NOT_EQ          shift and go to state 32
 
-  ! LESS            [ reduce using rule 22 (expression -> relational_expression .) ]
-  ! GREATER         [ reduce using rule 22 (expression -> relational_expression .) ]
-  ! LESS_EQ         [ reduce using rule 22 (expression -> relational_expression .) ]
-  ! GREATER_EQ      [ reduce using rule 22 (expression -> relational_expression .) ]
+  ! EQ              [ reduce using rule 22 (expression -> equality_expression .) ]
+  ! NOT_EQ          [ reduce using rule 22 (expression -> equality_expression .) ]
 
 
 state 15
@@ -465,9 +481,11 @@ state 15
     GREATER         reduce using rule 14 (primary_expression -> ID .)
     LESS_EQ         reduce using rule 14 (primary_expression -> ID .)
     GREATER_EQ      reduce using rule 14 (primary_expression -> ID .)
+    EQ              reduce using rule 14 (primary_expression -> ID .)
+    NOT_EQ          reduce using rule 14 (primary_expression -> ID .)
     SEMICOLON       reduce using rule 14 (primary_expression -> ID .)
     RPAREN          reduce using rule 14 (primary_expression -> ID .)
-    ASSIGN          shift and go to state 34
+    ASSIGN          shift and go to state 33
 
 
 state 16
@@ -482,6 +500,8 @@ state 16
     GREATER         reduce using rule 15 (primary_expression -> INUMBER .)
     LESS_EQ         reduce using rule 15 (primary_expression -> INUMBER .)
     GREATER_EQ      reduce using rule 15 (primary_expression -> INUMBER .)
+    EQ              reduce using rule 15 (primary_expression -> INUMBER .)
+    NOT_EQ          reduce using rule 15 (primary_expression -> INUMBER .)
     SEMICOLON       reduce using rule 15 (primary_expression -> INUMBER .)
     RPAREN          reduce using rule 15 (primary_expression -> INUMBER .)
 
@@ -498,11 +518,40 @@ state 17
     GREATER         reduce using rule 16 (primary_expression -> FNUMBER .)
     LESS_EQ         reduce using rule 16 (primary_expression -> FNUMBER .)
     GREATER_EQ      reduce using rule 16 (primary_expression -> FNUMBER .)
+    EQ              reduce using rule 16 (primary_expression -> FNUMBER .)
+    NOT_EQ          reduce using rule 16 (primary_expression -> FNUMBER .)
     SEMICOLON       reduce using rule 16 (primary_expression -> FNUMBER .)
     RPAREN          reduce using rule 16 (primary_expression -> FNUMBER .)
 
 
 state 18
+
+    (29) equality_expression -> relational_expression .
+    (25) relational_expression -> relational_expression . LESS primary_expression
+    (26) relational_expression -> relational_expression . GREATER primary_expression
+    (27) relational_expression -> relational_expression . LESS_EQ primary_expression
+    (28) relational_expression -> relational_expression . GREATER_EQ primary_expression
+
+  ! shift/reduce conflict for LESS resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS_EQ resolved as shift
+  ! shift/reduce conflict for GREATER_EQ resolved as shift
+    EQ              reduce using rule 29 (equality_expression -> relational_expression .)
+    NOT_EQ          reduce using rule 29 (equality_expression -> relational_expression .)
+    SEMICOLON       reduce using rule 29 (equality_expression -> relational_expression .)
+    RPAREN          reduce using rule 29 (equality_expression -> relational_expression .)
+    LESS            shift and go to state 34
+    GREATER         shift and go to state 35
+    LESS_EQ         shift and go to state 36
+    GREATER_EQ      shift and go to state 37
+
+  ! LESS            [ reduce using rule 29 (equality_expression -> relational_expression .) ]
+  ! GREATER         [ reduce using rule 29 (equality_expression -> relational_expression .) ]
+  ! LESS_EQ         [ reduce using rule 29 (equality_expression -> relational_expression .) ]
+  ! GREATER_EQ      [ reduce using rule 29 (equality_expression -> relational_expression .) ]
+
+
+state 19
 
     (24) relational_expression -> assignation .
 
@@ -510,11 +559,13 @@ state 18
     GREATER         reduce using rule 24 (relational_expression -> assignation .)
     LESS_EQ         reduce using rule 24 (relational_expression -> assignation .)
     GREATER_EQ      reduce using rule 24 (relational_expression -> assignation .)
+    EQ              reduce using rule 24 (relational_expression -> assignation .)
+    NOT_EQ          reduce using rule 24 (relational_expression -> assignation .)
     SEMICOLON       reduce using rule 24 (relational_expression -> assignation .)
     RPAREN          reduce using rule 24 (relational_expression -> assignation .)
 
 
-state 19
+state 20
 
     (2) programme -> statement programme .
 
@@ -522,18 +573,21 @@ state 19
     RBRACE          reduce using rule 2 (programme -> statement programme .)
 
 
-state 20
+state 21
 
     (9) iteration_statement -> WHILE LPAREN . expression RPAREN statement
     (18) expression -> . primary_expression PLUS primary_expression
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -547,19 +601,20 @@ state 20
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    expression                     shift and go to state 35
+    expression                     shift and go to state 38
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
-state 21
+state 22
 
     (17) primary_expression -> LPAREN expression . RPAREN
 
-    RPAREN          shift and go to state 36
+    RPAREN          shift and go to state 39
 
 
-state 22
+state 23
 
     (7) expression_statement -> expression SEMICOLON .
 
@@ -576,7 +631,7 @@ state 22
     ELSE            reduce using rule 7 (expression_statement -> expression SEMICOLON .)
 
 
-state 23
+state 24
 
     (10) iteration_statement -> FOR LPAREN . expression_statement expression_statement expression RPAREN statement
     (7) expression_statement -> . expression SEMICOLON
@@ -584,11 +639,14 @@ state 23
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -602,20 +660,21 @@ state 23
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    expression_statement           shift and go to state 37
+    expression_statement           shift and go to state 40
     expression                     shift and go to state 9
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
-state 24
+state 25
 
     (8) compound_statement -> LBRACE programme . RBRACE
 
-    RBRACE          shift and go to state 38
+    RBRACE          shift and go to state 41
 
 
-state 25
+state 26
 
     (11) selection_statement -> IF LPAREN . expression RPAREN statement
     (12) selection_statement -> IF LPAREN . expression RPAREN statement ELSE statement
@@ -623,11 +682,14 @@ state 25
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -641,12 +703,13 @@ state 25
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    expression                     shift and go to state 39
+    expression                     shift and go to state 42
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
-state 26
+state 27
 
     (18) expression -> primary_expression PLUS . primary_expression
     (14) primary_expression -> . ID
@@ -654,14 +717,14 @@ state 26
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
 
-    ID              shift and go to state 41
+    ID              shift and go to state 44
     INUMBER         shift and go to state 16
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    primary_expression             shift and go to state 40
+    primary_expression             shift and go to state 43
 
-state 27
+state 28
 
     (19) expression -> primary_expression MINUS . primary_expression
     (14) primary_expression -> . ID
@@ -669,14 +732,14 @@ state 27
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
 
-    ID              shift and go to state 41
+    ID              shift and go to state 44
     INUMBER         shift and go to state 16
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    primary_expression             shift and go to state 42
+    primary_expression             shift and go to state 45
 
-state 28
+state 29
 
     (20) expression -> primary_expression TIMES . primary_expression
     (14) primary_expression -> . ID
@@ -684,14 +747,14 @@ state 28
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
 
-    ID              shift and go to state 41
+    ID              shift and go to state 44
     INUMBER         shift and go to state 16
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    primary_expression             shift and go to state 43
+    primary_expression             shift and go to state 46
 
-state 29
+state 30
 
     (21) expression -> primary_expression DIV . primary_expression
     (14) primary_expression -> . ID
@@ -699,85 +762,76 @@ state 29
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
 
-    ID              shift and go to state 41
-    INUMBER         shift and go to state 16
-    FNUMBER         shift and go to state 17
-    LPAREN          shift and go to state 8
-
-    primary_expression             shift and go to state 44
-
-state 30
-
-    (25) relational_expression -> relational_expression LESS . primary_expression
-    (14) primary_expression -> . ID
-    (15) primary_expression -> . INUMBER
-    (16) primary_expression -> . FNUMBER
-    (17) primary_expression -> . LPAREN expression RPAREN
-
-    ID              shift and go to state 41
-    INUMBER         shift and go to state 16
-    FNUMBER         shift and go to state 17
-    LPAREN          shift and go to state 8
-
-    primary_expression             shift and go to state 45
-
-state 31
-
-    (26) relational_expression -> relational_expression GREATER . primary_expression
-    (14) primary_expression -> . ID
-    (15) primary_expression -> . INUMBER
-    (16) primary_expression -> . FNUMBER
-    (17) primary_expression -> . LPAREN expression RPAREN
-
-    ID              shift and go to state 41
-    INUMBER         shift and go to state 16
-    FNUMBER         shift and go to state 17
-    LPAREN          shift and go to state 8
-
-    primary_expression             shift and go to state 46
-
-state 32
-
-    (27) relational_expression -> relational_expression LESS_EQ . primary_expression
-    (14) primary_expression -> . ID
-    (15) primary_expression -> . INUMBER
-    (16) primary_expression -> . FNUMBER
-    (17) primary_expression -> . LPAREN expression RPAREN
-
-    ID              shift and go to state 41
+    ID              shift and go to state 44
     INUMBER         shift and go to state 16
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
     primary_expression             shift and go to state 47
 
-state 33
+state 31
 
-    (28) relational_expression -> relational_expression GREATER_EQ . primary_expression
+    (30) equality_expression -> equality_expression EQ . relational_expression
+    (23) relational_expression -> . primary_expression
+    (24) relational_expression -> . assignation
+    (25) relational_expression -> . relational_expression LESS primary_expression
+    (26) relational_expression -> . relational_expression GREATER primary_expression
+    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
+    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (13) assignation -> . ID ASSIGN expression
 
-    ID              shift and go to state 41
+    ID              shift and go to state 15
     INUMBER         shift and go to state 16
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    primary_expression             shift and go to state 48
+    relational_expression          shift and go to state 48
+    primary_expression             shift and go to state 49
+    assignation                    shift and go to state 19
 
-state 34
+state 32
+
+    (31) equality_expression -> equality_expression NOT_EQ . relational_expression
+    (23) relational_expression -> . primary_expression
+    (24) relational_expression -> . assignation
+    (25) relational_expression -> . relational_expression LESS primary_expression
+    (26) relational_expression -> . relational_expression GREATER primary_expression
+    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
+    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
+    (13) assignation -> . ID ASSIGN expression
+
+    ID              shift and go to state 15
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
+
+    relational_expression          shift and go to state 50
+    primary_expression             shift and go to state 49
+    assignation                    shift and go to state 19
+
+state 33
 
     (13) assignation -> ID ASSIGN . expression
     (18) expression -> . primary_expression PLUS primary_expression
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -791,19 +845,80 @@ state 34
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    expression                     shift and go to state 49
+    expression                     shift and go to state 51
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
+
+state 34
+
+    (25) relational_expression -> relational_expression LESS . primary_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
+
+    ID              shift and go to state 44
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
+
+    primary_expression             shift and go to state 52
 
 state 35
 
-    (9) iteration_statement -> WHILE LPAREN expression . RPAREN statement
+    (26) relational_expression -> relational_expression GREATER . primary_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
 
-    RPAREN          shift and go to state 50
+    ID              shift and go to state 44
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
 
+    primary_expression             shift and go to state 53
 
 state 36
+
+    (27) relational_expression -> relational_expression LESS_EQ . primary_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
+
+    ID              shift and go to state 44
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
+
+    primary_expression             shift and go to state 54
+
+state 37
+
+    (28) relational_expression -> relational_expression GREATER_EQ . primary_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
+
+    ID              shift and go to state 44
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
+
+    primary_expression             shift and go to state 55
+
+state 38
+
+    (9) iteration_statement -> WHILE LPAREN expression . RPAREN statement
+
+    RPAREN          shift and go to state 56
+
+
+state 39
 
     (17) primary_expression -> LPAREN expression RPAREN .
 
@@ -815,11 +930,13 @@ state 36
     GREATER         reduce using rule 17 (primary_expression -> LPAREN expression RPAREN .)
     LESS_EQ         reduce using rule 17 (primary_expression -> LPAREN expression RPAREN .)
     GREATER_EQ      reduce using rule 17 (primary_expression -> LPAREN expression RPAREN .)
+    EQ              reduce using rule 17 (primary_expression -> LPAREN expression RPAREN .)
+    NOT_EQ          reduce using rule 17 (primary_expression -> LPAREN expression RPAREN .)
     SEMICOLON       reduce using rule 17 (primary_expression -> LPAREN expression RPAREN .)
     RPAREN          reduce using rule 17 (primary_expression -> LPAREN expression RPAREN .)
 
 
-state 37
+state 40
 
     (10) iteration_statement -> FOR LPAREN expression_statement . expression_statement expression RPAREN statement
     (7) expression_statement -> . expression SEMICOLON
@@ -827,11 +944,14 @@ state 37
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -845,13 +965,14 @@ state 37
     FNUMBER         shift and go to state 17
     LPAREN          shift and go to state 8
 
-    expression_statement           shift and go to state 51
+    expression_statement           shift and go to state 57
     expression                     shift and go to state 9
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
-state 38
+state 41
 
     (8) compound_statement -> LBRACE programme RBRACE .
 
@@ -868,15 +989,15 @@ state 38
     ELSE            reduce using rule 8 (compound_statement -> LBRACE programme RBRACE .)
 
 
-state 39
+state 42
 
     (11) selection_statement -> IF LPAREN expression . RPAREN statement
     (12) selection_statement -> IF LPAREN expression . RPAREN statement ELSE statement
 
-    RPAREN          shift and go to state 52
+    RPAREN          shift and go to state 58
 
 
-state 40
+state 43
 
     (18) expression -> primary_expression PLUS primary_expression .
 
@@ -886,9 +1007,11 @@ state 40
     GREATER         reduce using rule 18 (expression -> primary_expression PLUS primary_expression .)
     LESS_EQ         reduce using rule 18 (expression -> primary_expression PLUS primary_expression .)
     GREATER_EQ      reduce using rule 18 (expression -> primary_expression PLUS primary_expression .)
+    EQ              reduce using rule 18 (expression -> primary_expression PLUS primary_expression .)
+    NOT_EQ          reduce using rule 18 (expression -> primary_expression PLUS primary_expression .)
 
 
-state 41
+state 44
 
     (14) primary_expression -> ID .
 
@@ -898,9 +1021,11 @@ state 41
     GREATER         reduce using rule 14 (primary_expression -> ID .)
     LESS_EQ         reduce using rule 14 (primary_expression -> ID .)
     GREATER_EQ      reduce using rule 14 (primary_expression -> ID .)
+    EQ              reduce using rule 14 (primary_expression -> ID .)
+    NOT_EQ          reduce using rule 14 (primary_expression -> ID .)
 
 
-state 42
+state 45
 
     (19) expression -> primary_expression MINUS primary_expression .
 
@@ -910,9 +1035,11 @@ state 42
     GREATER         reduce using rule 19 (expression -> primary_expression MINUS primary_expression .)
     LESS_EQ         reduce using rule 19 (expression -> primary_expression MINUS primary_expression .)
     GREATER_EQ      reduce using rule 19 (expression -> primary_expression MINUS primary_expression .)
+    EQ              reduce using rule 19 (expression -> primary_expression MINUS primary_expression .)
+    NOT_EQ          reduce using rule 19 (expression -> primary_expression MINUS primary_expression .)
 
 
-state 43
+state 46
 
     (20) expression -> primary_expression TIMES primary_expression .
 
@@ -922,9 +1049,11 @@ state 43
     GREATER         reduce using rule 20 (expression -> primary_expression TIMES primary_expression .)
     LESS_EQ         reduce using rule 20 (expression -> primary_expression TIMES primary_expression .)
     GREATER_EQ      reduce using rule 20 (expression -> primary_expression TIMES primary_expression .)
+    EQ              reduce using rule 20 (expression -> primary_expression TIMES primary_expression .)
+    NOT_EQ          reduce using rule 20 (expression -> primary_expression TIMES primary_expression .)
 
 
-state 44
+state 47
 
     (21) expression -> primary_expression DIV primary_expression .
 
@@ -934,57 +1063,79 @@ state 44
     GREATER         reduce using rule 21 (expression -> primary_expression DIV primary_expression .)
     LESS_EQ         reduce using rule 21 (expression -> primary_expression DIV primary_expression .)
     GREATER_EQ      reduce using rule 21 (expression -> primary_expression DIV primary_expression .)
-
-
-state 45
-
-    (25) relational_expression -> relational_expression LESS primary_expression .
-
-    LESS            reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
-    GREATER         reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
-    LESS_EQ         reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
-    GREATER_EQ      reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
-    SEMICOLON       reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
-    RPAREN          reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
-
-
-state 46
-
-    (26) relational_expression -> relational_expression GREATER primary_expression .
-
-    LESS            reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
-    GREATER         reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
-    LESS_EQ         reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
-    GREATER_EQ      reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
-    SEMICOLON       reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
-    RPAREN          reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
-
-
-state 47
-
-    (27) relational_expression -> relational_expression LESS_EQ primary_expression .
-
-    LESS            reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
-    GREATER         reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
-    LESS_EQ         reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
-    GREATER_EQ      reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
-    SEMICOLON       reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
-    RPAREN          reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+    EQ              reduce using rule 21 (expression -> primary_expression DIV primary_expression .)
+    NOT_EQ          reduce using rule 21 (expression -> primary_expression DIV primary_expression .)
 
 
 state 48
 
-    (28) relational_expression -> relational_expression GREATER_EQ primary_expression .
+    (30) equality_expression -> equality_expression EQ relational_expression .
+    (25) relational_expression -> relational_expression . LESS primary_expression
+    (26) relational_expression -> relational_expression . GREATER primary_expression
+    (27) relational_expression -> relational_expression . LESS_EQ primary_expression
+    (28) relational_expression -> relational_expression . GREATER_EQ primary_expression
 
-    LESS            reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
-    GREATER         reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
-    LESS_EQ         reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
-    GREATER_EQ      reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
-    SEMICOLON       reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
-    RPAREN          reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+  ! shift/reduce conflict for LESS resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS_EQ resolved as shift
+  ! shift/reduce conflict for GREATER_EQ resolved as shift
+    EQ              reduce using rule 30 (equality_expression -> equality_expression EQ relational_expression .)
+    NOT_EQ          reduce using rule 30 (equality_expression -> equality_expression EQ relational_expression .)
+    SEMICOLON       reduce using rule 30 (equality_expression -> equality_expression EQ relational_expression .)
+    RPAREN          reduce using rule 30 (equality_expression -> equality_expression EQ relational_expression .)
+    LESS            shift and go to state 34
+    GREATER         shift and go to state 35
+    LESS_EQ         shift and go to state 36
+    GREATER_EQ      shift and go to state 37
+
+  ! LESS            [ reduce using rule 30 (equality_expression -> equality_expression EQ relational_expression .) ]
+  ! GREATER         [ reduce using rule 30 (equality_expression -> equality_expression EQ relational_expression .) ]
+  ! LESS_EQ         [ reduce using rule 30 (equality_expression -> equality_expression EQ relational_expression .) ]
+  ! GREATER_EQ      [ reduce using rule 30 (equality_expression -> equality_expression EQ relational_expression .) ]
 
 
 state 49
+
+    (23) relational_expression -> primary_expression .
+
+    LESS            reduce using rule 23 (relational_expression -> primary_expression .)
+    GREATER         reduce using rule 23 (relational_expression -> primary_expression .)
+    LESS_EQ         reduce using rule 23 (relational_expression -> primary_expression .)
+    GREATER_EQ      reduce using rule 23 (relational_expression -> primary_expression .)
+    EQ              reduce using rule 23 (relational_expression -> primary_expression .)
+    NOT_EQ          reduce using rule 23 (relational_expression -> primary_expression .)
+    SEMICOLON       reduce using rule 23 (relational_expression -> primary_expression .)
+    RPAREN          reduce using rule 23 (relational_expression -> primary_expression .)
+
+
+state 50
+
+    (31) equality_expression -> equality_expression NOT_EQ relational_expression .
+    (25) relational_expression -> relational_expression . LESS primary_expression
+    (26) relational_expression -> relational_expression . GREATER primary_expression
+    (27) relational_expression -> relational_expression . LESS_EQ primary_expression
+    (28) relational_expression -> relational_expression . GREATER_EQ primary_expression
+
+  ! shift/reduce conflict for LESS resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS_EQ resolved as shift
+  ! shift/reduce conflict for GREATER_EQ resolved as shift
+    EQ              reduce using rule 31 (equality_expression -> equality_expression NOT_EQ relational_expression .)
+    NOT_EQ          reduce using rule 31 (equality_expression -> equality_expression NOT_EQ relational_expression .)
+    SEMICOLON       reduce using rule 31 (equality_expression -> equality_expression NOT_EQ relational_expression .)
+    RPAREN          reduce using rule 31 (equality_expression -> equality_expression NOT_EQ relational_expression .)
+    LESS            shift and go to state 34
+    GREATER         shift and go to state 35
+    LESS_EQ         shift and go to state 36
+    GREATER_EQ      shift and go to state 37
+
+  ! LESS            [ reduce using rule 31 (equality_expression -> equality_expression NOT_EQ relational_expression .) ]
+  ! GREATER         [ reduce using rule 31 (equality_expression -> equality_expression NOT_EQ relational_expression .) ]
+  ! LESS_EQ         [ reduce using rule 31 (equality_expression -> equality_expression NOT_EQ relational_expression .) ]
+  ! GREATER_EQ      [ reduce using rule 31 (equality_expression -> equality_expression NOT_EQ relational_expression .) ]
+
+
+state 51
 
     (13) assignation -> ID ASSIGN expression .
 
@@ -992,11 +1143,69 @@ state 49
     GREATER         reduce using rule 13 (assignation -> ID ASSIGN expression .)
     LESS_EQ         reduce using rule 13 (assignation -> ID ASSIGN expression .)
     GREATER_EQ      reduce using rule 13 (assignation -> ID ASSIGN expression .)
+    EQ              reduce using rule 13 (assignation -> ID ASSIGN expression .)
+    NOT_EQ          reduce using rule 13 (assignation -> ID ASSIGN expression .)
     SEMICOLON       reduce using rule 13 (assignation -> ID ASSIGN expression .)
     RPAREN          reduce using rule 13 (assignation -> ID ASSIGN expression .)
 
 
-state 50
+state 52
+
+    (25) relational_expression -> relational_expression LESS primary_expression .
+
+    LESS            reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
+    GREATER         reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
+    LESS_EQ         reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
+    GREATER_EQ      reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
+    EQ              reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
+    NOT_EQ          reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
+    SEMICOLON       reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
+    RPAREN          reduce using rule 25 (relational_expression -> relational_expression LESS primary_expression .)
+
+
+state 53
+
+    (26) relational_expression -> relational_expression GREATER primary_expression .
+
+    LESS            reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
+    GREATER         reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
+    LESS_EQ         reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
+    GREATER_EQ      reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
+    EQ              reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
+    NOT_EQ          reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
+    SEMICOLON       reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
+    RPAREN          reduce using rule 26 (relational_expression -> relational_expression GREATER primary_expression .)
+
+
+state 54
+
+    (27) relational_expression -> relational_expression LESS_EQ primary_expression .
+
+    LESS            reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+    GREATER         reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+    LESS_EQ         reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+    GREATER_EQ      reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+    EQ              reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+    NOT_EQ          reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+    SEMICOLON       reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+    RPAREN          reduce using rule 27 (relational_expression -> relational_expression LESS_EQ primary_expression .)
+
+
+state 55
+
+    (28) relational_expression -> relational_expression GREATER_EQ primary_expression .
+
+    LESS            reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+    GREATER         reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+    LESS_EQ         reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+    GREATER_EQ      reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+    EQ              reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+    NOT_EQ          reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+    SEMICOLON       reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+    RPAREN          reduce using rule 28 (relational_expression -> relational_expression GREATER_EQ primary_expression .)
+
+
+state 56
 
     (9) iteration_statement -> WHILE LPAREN expression RPAREN . statement
     (3) statement -> . iteration_statement
@@ -1013,233 +1222,14 @@ state 50
     (19) expression -> . primary_expression MINUS primary_expression
     (20) expression -> . primary_expression TIMES primary_expression
     (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
+    (22) expression -> . equality_expression
     (14) primary_expression -> . ID
     (15) primary_expression -> . INUMBER
     (16) primary_expression -> . FNUMBER
     (17) primary_expression -> . LPAREN expression RPAREN
-    (23) relational_expression -> . primary_expression
-    (24) relational_expression -> . assignation
-    (25) relational_expression -> . relational_expression LESS primary_expression
-    (26) relational_expression -> . relational_expression GREATER primary_expression
-    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
-    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
-    (13) assignation -> . ID ASSIGN expression
-
-    WHILE           shift and go to state 7
-    FOR             shift and go to state 10
-    LBRACE          shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 15
-    INUMBER         shift and go to state 16
-    FNUMBER         shift and go to state 17
-    LPAREN          shift and go to state 8
-
-    expression                     shift and go to state 9
-    statement                      shift and go to state 53
-    iteration_statement            shift and go to state 3
-    compound_statement             shift and go to state 4
-    expression_statement           shift and go to state 5
-    selection_statement            shift and go to state 6
-    primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
-
-state 51
-
-    (10) iteration_statement -> FOR LPAREN expression_statement expression_statement . expression RPAREN statement
-    (18) expression -> . primary_expression PLUS primary_expression
-    (19) expression -> . primary_expression MINUS primary_expression
-    (20) expression -> . primary_expression TIMES primary_expression
-    (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
-    (14) primary_expression -> . ID
-    (15) primary_expression -> . INUMBER
-    (16) primary_expression -> . FNUMBER
-    (17) primary_expression -> . LPAREN expression RPAREN
-    (23) relational_expression -> . primary_expression
-    (24) relational_expression -> . assignation
-    (25) relational_expression -> . relational_expression LESS primary_expression
-    (26) relational_expression -> . relational_expression GREATER primary_expression
-    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
-    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
-    (13) assignation -> . ID ASSIGN expression
-
-    ID              shift and go to state 15
-    INUMBER         shift and go to state 16
-    FNUMBER         shift and go to state 17
-    LPAREN          shift and go to state 8
-
-    expression                     shift and go to state 54
-    primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
-
-state 52
-
-    (11) selection_statement -> IF LPAREN expression RPAREN . statement
-    (12) selection_statement -> IF LPAREN expression RPAREN . statement ELSE statement
-    (3) statement -> . iteration_statement
-    (4) statement -> . compound_statement
-    (5) statement -> . expression_statement
-    (6) statement -> . selection_statement
-    (9) iteration_statement -> . WHILE LPAREN expression RPAREN statement
-    (10) iteration_statement -> . FOR LPAREN expression_statement expression_statement expression RPAREN statement
-    (8) compound_statement -> . LBRACE programme RBRACE
-    (7) expression_statement -> . expression SEMICOLON
-    (11) selection_statement -> . IF LPAREN expression RPAREN statement
-    (12) selection_statement -> . IF LPAREN expression RPAREN statement ELSE statement
-    (18) expression -> . primary_expression PLUS primary_expression
-    (19) expression -> . primary_expression MINUS primary_expression
-    (20) expression -> . primary_expression TIMES primary_expression
-    (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
-    (14) primary_expression -> . ID
-    (15) primary_expression -> . INUMBER
-    (16) primary_expression -> . FNUMBER
-    (17) primary_expression -> . LPAREN expression RPAREN
-    (23) relational_expression -> . primary_expression
-    (24) relational_expression -> . assignation
-    (25) relational_expression -> . relational_expression LESS primary_expression
-    (26) relational_expression -> . relational_expression GREATER primary_expression
-    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
-    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
-    (13) assignation -> . ID ASSIGN expression
-
-    WHILE           shift and go to state 7
-    FOR             shift and go to state 10
-    LBRACE          shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 15
-    INUMBER         shift and go to state 16
-    FNUMBER         shift and go to state 17
-    LPAREN          shift and go to state 8
-
-    expression                     shift and go to state 9
-    statement                      shift and go to state 55
-    iteration_statement            shift and go to state 3
-    compound_statement             shift and go to state 4
-    expression_statement           shift and go to state 5
-    selection_statement            shift and go to state 6
-    primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
-
-state 53
-
-    (9) iteration_statement -> WHILE LPAREN expression RPAREN statement .
-
-    WHILE           reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    FOR             reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    LBRACE          reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    IF              reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    ID              reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    INUMBER         reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    FNUMBER         reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    LPAREN          reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    $end            reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    RBRACE          reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-    ELSE            reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
-
-
-state 54
-
-    (10) iteration_statement -> FOR LPAREN expression_statement expression_statement expression . RPAREN statement
-
-    RPAREN          shift and go to state 56
-
-
-state 55
-
-    (11) selection_statement -> IF LPAREN expression RPAREN statement .
-    (12) selection_statement -> IF LPAREN expression RPAREN statement . ELSE statement
-
-    WHILE           reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    FOR             reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    LBRACE          reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    IF              reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    ID              reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    INUMBER         reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    FNUMBER         reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    LPAREN          reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    $end            reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    RBRACE          reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
-    ELSE            shift and go to state 57
-
-  ! ELSE            [ reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .) ]
-
-
-state 56
-
-    (10) iteration_statement -> FOR LPAREN expression_statement expression_statement expression RPAREN . statement
-    (3) statement -> . iteration_statement
-    (4) statement -> . compound_statement
-    (5) statement -> . expression_statement
-    (6) statement -> . selection_statement
-    (9) iteration_statement -> . WHILE LPAREN expression RPAREN statement
-    (10) iteration_statement -> . FOR LPAREN expression_statement expression_statement expression RPAREN statement
-    (8) compound_statement -> . LBRACE programme RBRACE
-    (7) expression_statement -> . expression SEMICOLON
-    (11) selection_statement -> . IF LPAREN expression RPAREN statement
-    (12) selection_statement -> . IF LPAREN expression RPAREN statement ELSE statement
-    (18) expression -> . primary_expression PLUS primary_expression
-    (19) expression -> . primary_expression MINUS primary_expression
-    (20) expression -> . primary_expression TIMES primary_expression
-    (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
-    (14) primary_expression -> . ID
-    (15) primary_expression -> . INUMBER
-    (16) primary_expression -> . FNUMBER
-    (17) primary_expression -> . LPAREN expression RPAREN
-    (23) relational_expression -> . primary_expression
-    (24) relational_expression -> . assignation
-    (25) relational_expression -> . relational_expression LESS primary_expression
-    (26) relational_expression -> . relational_expression GREATER primary_expression
-    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
-    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
-    (13) assignation -> . ID ASSIGN expression
-
-    WHILE           shift and go to state 7
-    FOR             shift and go to state 10
-    LBRACE          shift and go to state 11
-    IF              shift and go to state 12
-    ID              shift and go to state 15
-    INUMBER         shift and go to state 16
-    FNUMBER         shift and go to state 17
-    LPAREN          shift and go to state 8
-
-    expression_statement           shift and go to state 5
-    expression                     shift and go to state 9
-    statement                      shift and go to state 58
-    iteration_statement            shift and go to state 3
-    compound_statement             shift and go to state 4
-    selection_statement            shift and go to state 6
-    primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
-
-state 57
-
-    (12) selection_statement -> IF LPAREN expression RPAREN statement ELSE . statement
-    (3) statement -> . iteration_statement
-    (4) statement -> . compound_statement
-    (5) statement -> . expression_statement
-    (6) statement -> . selection_statement
-    (9) iteration_statement -> . WHILE LPAREN expression RPAREN statement
-    (10) iteration_statement -> . FOR LPAREN expression_statement expression_statement expression RPAREN statement
-    (8) compound_statement -> . LBRACE programme RBRACE
-    (7) expression_statement -> . expression SEMICOLON
-    (11) selection_statement -> . IF LPAREN expression RPAREN statement
-    (12) selection_statement -> . IF LPAREN expression RPAREN statement ELSE statement
-    (18) expression -> . primary_expression PLUS primary_expression
-    (19) expression -> . primary_expression MINUS primary_expression
-    (20) expression -> . primary_expression TIMES primary_expression
-    (21) expression -> . primary_expression DIV primary_expression
-    (22) expression -> . relational_expression
-    (14) primary_expression -> . ID
-    (15) primary_expression -> . INUMBER
-    (16) primary_expression -> . FNUMBER
-    (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
     (23) relational_expression -> . primary_expression
     (24) relational_expression -> . assignation
     (25) relational_expression -> . relational_expression LESS primary_expression
@@ -1264,10 +1254,249 @@ state 57
     expression_statement           shift and go to state 5
     selection_statement            shift and go to state 6
     primary_expression             shift and go to state 13
-    relational_expression          shift and go to state 14
-    assignation                    shift and go to state 18
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
+
+state 57
+
+    (10) iteration_statement -> FOR LPAREN expression_statement expression_statement . expression RPAREN statement
+    (18) expression -> . primary_expression PLUS primary_expression
+    (19) expression -> . primary_expression MINUS primary_expression
+    (20) expression -> . primary_expression TIMES primary_expression
+    (21) expression -> . primary_expression DIV primary_expression
+    (22) expression -> . equality_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
+    (23) relational_expression -> . primary_expression
+    (24) relational_expression -> . assignation
+    (25) relational_expression -> . relational_expression LESS primary_expression
+    (26) relational_expression -> . relational_expression GREATER primary_expression
+    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
+    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
+    (13) assignation -> . ID ASSIGN expression
+
+    ID              shift and go to state 15
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
+
+    expression                     shift and go to state 60
+    primary_expression             shift and go to state 13
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
 
 state 58
+
+    (11) selection_statement -> IF LPAREN expression RPAREN . statement
+    (12) selection_statement -> IF LPAREN expression RPAREN . statement ELSE statement
+    (3) statement -> . iteration_statement
+    (4) statement -> . compound_statement
+    (5) statement -> . expression_statement
+    (6) statement -> . selection_statement
+    (9) iteration_statement -> . WHILE LPAREN expression RPAREN statement
+    (10) iteration_statement -> . FOR LPAREN expression_statement expression_statement expression RPAREN statement
+    (8) compound_statement -> . LBRACE programme RBRACE
+    (7) expression_statement -> . expression SEMICOLON
+    (11) selection_statement -> . IF LPAREN expression RPAREN statement
+    (12) selection_statement -> . IF LPAREN expression RPAREN statement ELSE statement
+    (18) expression -> . primary_expression PLUS primary_expression
+    (19) expression -> . primary_expression MINUS primary_expression
+    (20) expression -> . primary_expression TIMES primary_expression
+    (21) expression -> . primary_expression DIV primary_expression
+    (22) expression -> . equality_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
+    (23) relational_expression -> . primary_expression
+    (24) relational_expression -> . assignation
+    (25) relational_expression -> . relational_expression LESS primary_expression
+    (26) relational_expression -> . relational_expression GREATER primary_expression
+    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
+    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
+    (13) assignation -> . ID ASSIGN expression
+
+    WHILE           shift and go to state 7
+    FOR             shift and go to state 10
+    LBRACE          shift and go to state 11
+    IF              shift and go to state 12
+    ID              shift and go to state 15
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
+
+    expression                     shift and go to state 9
+    statement                      shift and go to state 61
+    iteration_statement            shift and go to state 3
+    compound_statement             shift and go to state 4
+    expression_statement           shift and go to state 5
+    selection_statement            shift and go to state 6
+    primary_expression             shift and go to state 13
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
+
+state 59
+
+    (9) iteration_statement -> WHILE LPAREN expression RPAREN statement .
+
+    WHILE           reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    FOR             reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    LBRACE          reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    IF              reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    ID              reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    INUMBER         reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    FNUMBER         reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    LPAREN          reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    $end            reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    RBRACE          reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+    ELSE            reduce using rule 9 (iteration_statement -> WHILE LPAREN expression RPAREN statement .)
+
+
+state 60
+
+    (10) iteration_statement -> FOR LPAREN expression_statement expression_statement expression . RPAREN statement
+
+    RPAREN          shift and go to state 62
+
+
+state 61
+
+    (11) selection_statement -> IF LPAREN expression RPAREN statement .
+    (12) selection_statement -> IF LPAREN expression RPAREN statement . ELSE statement
+
+    WHILE           reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    FOR             reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    LBRACE          reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    IF              reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    ID              reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    INUMBER         reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    FNUMBER         reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    LPAREN          reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    $end            reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    RBRACE          reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .)
+    ELSE            shift and go to state 63
+
+  ! ELSE            [ reduce using rule 11 (selection_statement -> IF LPAREN expression RPAREN statement .) ]
+
+
+state 62
+
+    (10) iteration_statement -> FOR LPAREN expression_statement expression_statement expression RPAREN . statement
+    (3) statement -> . iteration_statement
+    (4) statement -> . compound_statement
+    (5) statement -> . expression_statement
+    (6) statement -> . selection_statement
+    (9) iteration_statement -> . WHILE LPAREN expression RPAREN statement
+    (10) iteration_statement -> . FOR LPAREN expression_statement expression_statement expression RPAREN statement
+    (8) compound_statement -> . LBRACE programme RBRACE
+    (7) expression_statement -> . expression SEMICOLON
+    (11) selection_statement -> . IF LPAREN expression RPAREN statement
+    (12) selection_statement -> . IF LPAREN expression RPAREN statement ELSE statement
+    (18) expression -> . primary_expression PLUS primary_expression
+    (19) expression -> . primary_expression MINUS primary_expression
+    (20) expression -> . primary_expression TIMES primary_expression
+    (21) expression -> . primary_expression DIV primary_expression
+    (22) expression -> . equality_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
+    (23) relational_expression -> . primary_expression
+    (24) relational_expression -> . assignation
+    (25) relational_expression -> . relational_expression LESS primary_expression
+    (26) relational_expression -> . relational_expression GREATER primary_expression
+    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
+    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
+    (13) assignation -> . ID ASSIGN expression
+
+    WHILE           shift and go to state 7
+    FOR             shift and go to state 10
+    LBRACE          shift and go to state 11
+    IF              shift and go to state 12
+    ID              shift and go to state 15
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
+
+    expression_statement           shift and go to state 5
+    expression                     shift and go to state 9
+    statement                      shift and go to state 64
+    iteration_statement            shift and go to state 3
+    compound_statement             shift and go to state 4
+    selection_statement            shift and go to state 6
+    primary_expression             shift and go to state 13
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
+
+state 63
+
+    (12) selection_statement -> IF LPAREN expression RPAREN statement ELSE . statement
+    (3) statement -> . iteration_statement
+    (4) statement -> . compound_statement
+    (5) statement -> . expression_statement
+    (6) statement -> . selection_statement
+    (9) iteration_statement -> . WHILE LPAREN expression RPAREN statement
+    (10) iteration_statement -> . FOR LPAREN expression_statement expression_statement expression RPAREN statement
+    (8) compound_statement -> . LBRACE programme RBRACE
+    (7) expression_statement -> . expression SEMICOLON
+    (11) selection_statement -> . IF LPAREN expression RPAREN statement
+    (12) selection_statement -> . IF LPAREN expression RPAREN statement ELSE statement
+    (18) expression -> . primary_expression PLUS primary_expression
+    (19) expression -> . primary_expression MINUS primary_expression
+    (20) expression -> . primary_expression TIMES primary_expression
+    (21) expression -> . primary_expression DIV primary_expression
+    (22) expression -> . equality_expression
+    (14) primary_expression -> . ID
+    (15) primary_expression -> . INUMBER
+    (16) primary_expression -> . FNUMBER
+    (17) primary_expression -> . LPAREN expression RPAREN
+    (29) equality_expression -> . relational_expression
+    (30) equality_expression -> . equality_expression EQ relational_expression
+    (31) equality_expression -> . equality_expression NOT_EQ relational_expression
+    (23) relational_expression -> . primary_expression
+    (24) relational_expression -> . assignation
+    (25) relational_expression -> . relational_expression LESS primary_expression
+    (26) relational_expression -> . relational_expression GREATER primary_expression
+    (27) relational_expression -> . relational_expression LESS_EQ primary_expression
+    (28) relational_expression -> . relational_expression GREATER_EQ primary_expression
+    (13) assignation -> . ID ASSIGN expression
+
+    WHILE           shift and go to state 7
+    FOR             shift and go to state 10
+    LBRACE          shift and go to state 11
+    IF              shift and go to state 12
+    ID              shift and go to state 15
+    INUMBER         shift and go to state 16
+    FNUMBER         shift and go to state 17
+    LPAREN          shift and go to state 8
+
+    expression                     shift and go to state 9
+    statement                      shift and go to state 65
+    iteration_statement            shift and go to state 3
+    compound_statement             shift and go to state 4
+    expression_statement           shift and go to state 5
+    selection_statement            shift and go to state 6
+    primary_expression             shift and go to state 13
+    equality_expression            shift and go to state 14
+    relational_expression          shift and go to state 18
+    assignation                    shift and go to state 19
+
+state 64
 
     (10) iteration_statement -> FOR LPAREN expression_statement expression_statement expression RPAREN statement .
 
@@ -1284,7 +1513,7 @@ state 58
     ELSE            reduce using rule 10 (iteration_statement -> FOR LPAREN expression_statement expression_statement expression RPAREN statement .)
 
 
-state 59
+state 65
 
     (12) selection_statement -> IF LPAREN expression RPAREN statement ELSE statement .
 
@@ -1303,7 +1532,17 @@ state 59
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for LESS in state 14 resolved as shift
-WARNING: shift/reduce conflict for GREATER in state 14 resolved as shift
-WARNING: shift/reduce conflict for LESS_EQ in state 14 resolved as shift
-WARNING: shift/reduce conflict for GREATER_EQ in state 14 resolved as shift
+WARNING: shift/reduce conflict for EQ in state 14 resolved as shift
+WARNING: shift/reduce conflict for NOT_EQ in state 14 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 18 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 18 resolved as shift
+WARNING: shift/reduce conflict for LESS_EQ in state 18 resolved as shift
+WARNING: shift/reduce conflict for GREATER_EQ in state 18 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 48 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 48 resolved as shift
+WARNING: shift/reduce conflict for LESS_EQ in state 48 resolved as shift
+WARNING: shift/reduce conflict for GREATER_EQ in state 48 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 50 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 50 resolved as shift
+WARNING: shift/reduce conflict for LESS_EQ in state 50 resolved as shift
+WARNING: shift/reduce conflict for GREATER_EQ in state 50 resolved as shift
