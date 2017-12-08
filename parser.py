@@ -7,7 +7,10 @@ precedence = (
     ( 'left' , 'PLUS' ),
 	( 'left' , 'TIMES' ),
 	( 'left' , 'DIV' ),
-	( 'left' , 'MINUS' )
+	( 'left' , 'MINUS' ),
+    # ('right', 'ELSE'),
+    ('nonassoc', 'IFX'), #Hack de fou : http://epaperpress.com/lexandyacc/if.html
+    ('nonassoc', 'ELSE'),
 )
 
 vars = {}
@@ -21,10 +24,10 @@ def p_programme_recursive(p):
 	p[0] = AST.ProgramNode([p[1]]+p[2].children)
 
 def p_statement(p):
-	''' statement : assignation SEMICOLON
-        | iteration_statement
+	''' statement : iteration_statement
         | compound_statement
-        | expression_statement '''
+        | expression_statement
+        | selection_statement '''
 	p[0] = p[1]
 
 def p_expression_statement(p):
@@ -44,21 +47,29 @@ def p_iteration_statement_02(p):
     '''iteration_statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement'''
     p[0] = AST.ForNode([p[3], p[4], p[5], p[7]])
 
+def p_selection_statement_01(p):
+    '''selection_statement : IF LPAREN expression RPAREN statement %prec IFX '''
+    p[0] = AST.IfNode([p[3], p[5]])
+
+def p_selection_statement_02(p):
+    '''selection_statement : IF LPAREN expression RPAREN statement ELSE statement'''
+    p[0] = AST.IfNode([p[3], p[5], p[7]])
+
 def p_assign(p):
 	''' assignation : ID ASSIGN expression '''
 	p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
-def p_expression_var(p):
-	''' expression : ID '''
+def p_primary_expression_var(p):
+	''' primary_expression : ID '''
 	p[0] = AST.TokenNode(p[1])
 
-def p_expression_num(p):
-    ''' expression : INUMBER
+def p_primary_expression_num(p):
+    ''' primary_expression : INUMBER
         | FNUMBER '''
     p[0] = AST.TokenNode(p[1])
 
-def p_expression_par(p):
-    '''expression : LPAREN expression RPAREN'''
+def p_primary_expression_par(p):
+    '''primary_expression : LPAREN expression RPAREN '''
     p[0] = p[2]
 
 # def p_type_specifier(t):
@@ -68,11 +79,30 @@ def p_expression_par(p):
 #     t[0] = BaseType(t[1])
 
 def p_expression_op(p):
-    '''expression : expression PLUS expression
-    | expression MINUS expression
-    | expression TIMES expression
-    | expression DIV expression '''
+    '''expression : primary_expression PLUS primary_expression
+    | primary_expression MINUS primary_expression
+    | primary_expression TIMES primary_expression
+    | primary_expression DIV primary_expression '''
     p[0] = AST.OpNode(p[2], [p[1], p[3]])
+
+def p_expression_assign(p):
+    '''expression : relational_expression '''
+    p[0] = p[1]
+
+def p_relational_expression_01(p):
+    '''relational_expression : primary_expression
+    | assignation '''
+    p[0] = p[1]
+
+def p_relational_expression_02(p):
+    '''relational_expression : relational_expression LESS primary_expression
+                             | relational_expression GREATER primary_expression
+                             | relational_expression LESS_EQ primary_expression
+                             | relational_expression GREATER_EQ primary_expression'''
+    p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
+
+
+
 
 def p_error(p) :
 	if p is not None:
