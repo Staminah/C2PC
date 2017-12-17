@@ -65,6 +65,33 @@ def compile(self):
 	tabcounter -= 1
 	return bytecode
 
+# noeud de test if
+@addToClass(AST.IfNode)
+def compile(self):
+	tabs = getIndent()
+	global tabcounter
+	bytecode = ""
+	bytecode += tabs + "if " + self.children[0].compile() + ":\n"
+	tabcounter += 1
+	bytecode += self.children[1].compile()
+	tabcounter -= 1
+	if(len(self.children) > 2):
+		bytecode += tabs + "else:\n"
+		tabcounter += 1
+		bytecode += tabs + self.children[2].compile()
+		tabcounter -= 1
+
+	return bytecode
+
+# noeud de comparaison
+@addToClass(AST.ComparatorNode)
+def compile(self):
+	bytecode = ""
+	bytecode += "(" + self.children[0].compile()
+	bytecode += self.op
+	bytecode += self.children[1].compile() + ")"
+	return bytecode
+
 
 if __name__ == "__main__":
     from parser_C2PC import parse
