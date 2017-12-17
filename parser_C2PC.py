@@ -114,9 +114,6 @@ def p_equality_expression_02(p):
                            | equality_expression NOT_EQ relational_expression'''
     p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
 
-
-
-
 def p_error(p) :
 	if p is not None:
 		print("Erreur de syntaxe à la ligne %s"%(p.lineno))
@@ -127,7 +124,7 @@ def p_error(p) :
 def parse(program):
     return yacc.parse(program)
 
-parser = yacc.yacc(outputdir = 'generated', debug=1)
+parser = yacc.yacc(outputdir = 'generated')
 
 if __name__ == "__main__" :
 
