@@ -137,3 +137,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Remove PDF and Python files
+test_files/*.pdf
+test_files/*.py

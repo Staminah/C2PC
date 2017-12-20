@@ -38,16 +38,18 @@ def compile(self):
 # noeud d'affichage
 @addToClass(AST.PrintNode)
 def compile(self):
+	tabs = getIndent()
+	global tabcounter
 	bytecode = ""
+	bytecode += tabs + "print("
 	bytecode += self.children[0].compile()
-	bytecode += "PRINT\n"
+	bytecode += ")"
 	return bytecode
 
 # noeud d'opération arithmétique
 @addToClass(AST.OpNode)
 def compile(self):
 	bytecode = ""
-
 	bytecode += "(" + self.children[0].compile()
 	bytecode += self.op
 	bytecode += self.children[1].compile() + ")"
@@ -63,6 +65,38 @@ def compile(self):
 	tabcounter += 1
 	bytecode += self.children[1].compile()
 	tabcounter -= 1
+	return bytecode
+
+# noeud de boucle for
+@addToClass(AST.ForNode)
+def compile(self):
+	tabs = getIndent()
+	global tabcounter
+	bytecode = ""
+	bytecode += tabs + self.children[0].compile()
+	bytecode += tabs + "while " + self.children[1].compile() + ":\n"
+	tabcounter += 1
+	bytecode += self.children[3].compile()
+	bytecode += self.children[2].compile()
+	tabcounter -= 1
+
+	# Version pythonique complexe avec un vrai for (traite < et <=)
+	bytecode += "'''\n"
+	if (type(self.children[0]) is AST.AssignNode):
+		bytecode += tabs + "for " + self.children[0].children[0].compile() + " in xrange(" + self.children[0].children[1].compile() + ", "
+	if (type(self.children[1]) is AST.ComparatorNode):
+		if (self.children[1].op == "<"):
+			bytecode += self.children[1].children[1].compile() + ", "
+		elif (self.children[1].op == "<="):
+			number = int(self.children[1].children[1].compile()) + 1
+			bytecode += "{}, ".format(number)
+	if (type(self.children[2]) is AST.AssignNode):
+		bytecode += self.children[2].children[1].children[1].compile() + "):\n"
+	tabcounter += 1
+	bytecode += self.children[3].compile()
+	tabcounter -= 1
+	bytecode += "'''\n"
+
 	return bytecode
 
 # noeud de test if
