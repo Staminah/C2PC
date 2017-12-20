@@ -55,6 +55,9 @@ tokens = (
     'EQ_MINUS',
     'EQ_TIMES',
     'EQ_DIV',
+    'DOUBLE_AMPERSAND',
+    'DOUBLE_PIPE',
+
 
     # Complex tokens
     'ID',
@@ -110,6 +113,8 @@ t_EQ_PLUS = r'\+='
 t_EQ_MINUS = r'-='
 t_EQ_TIMES = r'\*='
 t_EQ_DIV = r'/='
+t_DOUBLE_AMPERSAND = r'&&'
+t_DOUBLE_PIPE = r'\|\|'
 
 #  ---------------------------------------------------------------
 #  COMPLEX TOKENS

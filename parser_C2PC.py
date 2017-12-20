@@ -38,7 +38,6 @@ def p_compound_statement_01(p):
     '''compound_statement : LBRACE programme RBRACE'''
     p[0] = p[2]
 
-
 def p_iteration_statement_01(p):
     ''' iteration_statement : WHILE LPAREN expression RPAREN statement '''
     p[0] = AST.WhileNode([p[3],p[5]])
@@ -59,6 +58,52 @@ def p_assign(p):
 	''' assignation : ID ASSIGN expression '''
 	p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
+def p_expression_assign(p):
+    '''expression : logical_expression '''
+    p[0] = p[1]
+
+def p_logical_expression_01(p):
+    '''logical_expression : equality_expression'''
+    p[0] = p[1]
+
+def p_logical_expression_02(p):
+    '''logical_expression : logical_expression DOUBLE_AMPERSAND equality_expression
+                           | logical_expression DOUBLE_PIPE equality_expression'''
+    p[0] = AST.LogicalNode(p[2],[p[1],p[3]])
+
+def p_equality_expression_01(p):
+    '''equality_expression : relational_expression'''
+    p[0] = p[1]
+
+def p_equality_expression_02(p):
+    '''equality_expression : equality_expression EQ relational_expression
+                           | equality_expression NOT_EQ relational_expression'''
+    p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
+
+def p_relational_expression_01(p):
+    '''relational_expression : op_expression
+    | assignation '''
+    p[0] = p[1]
+
+def p_relational_expression_02(p):
+    '''relational_expression : relational_expression LESS op_expression
+                             | relational_expression GREATER op_expression
+                             | relational_expression LESS_EQ op_expression
+                             | relational_expression GREATER_EQ op_expression'''
+    p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
+
+def p_expression_op_01(p):
+    '''op_expression : op_expression PLUS primary_expression
+    | op_expression MINUS primary_expression
+    | op_expression TIMES primary_expression
+    | op_expression DIV primary_expression
+    | op_expression MODULO primary_expression'''
+    p[0] = AST.OpNode(p[2], [p[1], p[3]])
+
+def p_expression_op_02(p):
+    '''op_expression : primary_expression '''
+    p[0] = p[1]
+
 def p_primary_expression_var(p):
 	''' primary_expression : ID '''
 	p[0] = AST.TokenNode(p[1])
@@ -78,41 +123,6 @@ def p_primary_expression_par(p):
 #                       | FLOAT '''
 #     t[0] = BaseType(t[1])
 
-def p_expression_op_01(p):
-    '''op_expression : op_expression PLUS primary_expression
-    | op_expression MINUS primary_expression
-    | op_expression TIMES primary_expression
-    | op_expression DIV primary_expression '''
-    p[0] = AST.OpNode(p[2], [p[1], p[3]])
-
-def p_expression_op_02(p):
-    '''op_expression : primary_expression '''
-    p[0] = p[1]
-
-def p_expression_assign(p):
-    '''expression : equality_expression '''
-    p[0] = p[1]
-
-def p_relational_expression_01(p):
-    '''relational_expression : op_expression
-    | assignation '''
-    p[0] = p[1]
-
-def p_relational_expression_02(p):
-    '''relational_expression : relational_expression LESS op_expression
-                             | relational_expression GREATER op_expression
-                             | relational_expression LESS_EQ op_expression
-                             | relational_expression GREATER_EQ op_expression'''
-    p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
-
-def p_equality_expression_01(p):
-    '''equality_expression : relational_expression'''
-    p[0] = p[1]
-
-def p_equality_expression_02(p):
-    '''equality_expression : equality_expression EQ relational_expression
-                           | equality_expression NOT_EQ relational_expression'''
-    p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
 
 def p_error(p) :
 	if p is not None:
