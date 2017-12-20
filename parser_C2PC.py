@@ -82,7 +82,8 @@ def p_expression_op_01(p):
     '''op_expression : op_expression PLUS primary_expression
     | op_expression MINUS primary_expression
     | op_expression TIMES primary_expression
-    | op_expression DIV primary_expression '''
+    | op_expression DIV primary_expression
+    | op_expression MODULO primary_expression'''
     p[0] = AST.OpNode(p[2], [p[1], p[3]])
 
 def p_expression_op_02(p):
@@ -90,7 +91,7 @@ def p_expression_op_02(p):
     p[0] = p[1]
 
 def p_expression_assign(p):
-    '''expression : equality_expression '''
+    '''expression : logical_expression '''
     p[0] = p[1]
 
 def p_relational_expression_01(p):
@@ -113,6 +114,15 @@ def p_equality_expression_02(p):
     '''equality_expression : equality_expression EQ relational_expression
                            | equality_expression NOT_EQ relational_expression'''
     p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
+
+def p_logical_expression_01(p):
+    '''logical_expression : equality_expression'''
+    p[0] = p[1]
+
+def p_logical_expression_02(p):
+    '''logical_expression : logical_expression DOUBLE_AMPERSAND equality_expression
+                           | logical_expression DOUBLE_PIPE equality_expression'''
+    p[0] = AST.LogicalNode(p[2],[p[1],p[3]])
 
 def p_error(p) :
 	if p is not None:
