@@ -92,28 +92,52 @@ def p_equality_expression_02(p):
     p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
 
 def p_relational_expression_01(p):
-    '''relational_expression : op_expression
+    '''relational_expression : additive_expression
     | assignation '''
     p[0] = p[1]
 
 def p_relational_expression_02(p):
-    '''relational_expression : relational_expression LESS op_expression
-                             | relational_expression GREATER op_expression
-                             | relational_expression LESS_EQ op_expression
-                             | relational_expression GREATER_EQ op_expression'''
+    '''relational_expression : relational_expression LESS additive_expression
+                             | relational_expression GREATER additive_expression
+                             | relational_expression LESS_EQ additive_expression
+                             | relational_expression GREATER_EQ additive_expression'''
     p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
 
-def p_expression_op_01(p):
-    '''op_expression : op_expression PLUS primary_expression
-    | op_expression MINUS primary_expression
-    | op_expression TIMES primary_expression
-    | op_expression DIV primary_expression
-    | op_expression MODULO primary_expression'''
+def p_additive_expression_01(p):
+    '''additive_expression : additive_expression PLUS mult_expression
+    | additive_expression MINUS mult_expression '''
     p[0] = AST.OpNode(p[2], [p[1], p[3]])
 
-def p_expression_op_02(p):
-    '''op_expression : postfix_expression'''
+def p_additive_expression_02(p):
+    '''additive_expression : mult_expression'''
     p[0] = p[1]
+
+def p_mult_expression_01(p):
+    '''mult_expression : mult_expression TIMES postfix_expression
+    | mult_expression DIV postfix_expression
+    | mult_expression MODULO postfix_expression'''
+    p[0] = AST.OpNode(p[2], [p[1], p[3]])
+
+def p_mult_expression_02(p):
+    '''mult_expression : unary_expression'''
+    p[0] = p[1]
+
+def p_unary_expression_01(p):
+    '''unary_expression : postfix_expression'''
+    p[0] = p[1]
+
+def p_unary_expression_02(p):
+    '''unary_expression : MINUS unary_expression'''
+    p[0] = AST.OpNode(p[1], [p[2]])
+
+def p_unary_expression_03(p):
+    '''unary_expression : PLUS unary_expression'''
+    p[0] = p[2]
+
+def p_unary_expression_04(p):
+    '''unary_expression : EXCLAMATION unary_expression'''
+    p[0] = AST.OpNode(p[1], [p[2]])
+
 
 def p_primary_expression_var(p):
     ''' primary_expression : ID '''
