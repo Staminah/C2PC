@@ -10,7 +10,6 @@ def getIndent():
 	return tab
 
 # noeud de programme
-# retourne la suite d'opcodes de tous les enfants
 @addToClass(AST.ProgramNode)
 def compile(self):
 	bytecode = ""
@@ -50,9 +49,9 @@ def compile(self):
 @addToClass(AST.OpNode)
 def compile(self):
 	bytecode = ""
-	bytecode += "(" + self.children[0].compile()
+	bytecode += "(" + self.children[0].compile() + " "
 	bytecode += self.op
-	bytecode += self.children[1].compile() + ")"
+	bytecode += " " + self.children[1].compile() + ")"
 	return bytecode
 
 # noeud de boucle while
@@ -121,11 +120,50 @@ def compile(self):
 @addToClass(AST.ComparatorNode)
 def compile(self):
 	bytecode = ""
-	bytecode += "(" + self.children[0].compile()
+	bytecode += "(" + self.children[0].compile() + " "
 	bytecode += self.op
-	bytecode += self.children[1].compile() + ")"
+	bytecode += " " + self.children[1].compile() + ")"
 	return bytecode
 
+# noeud de return
+@addToClass(AST.ReturnNode)
+def compile(self):
+	tabs = getIndent()
+	bytecode = ""
+	if (len(self.children) > 0):
+		bytecode += tabs + "return " + self.children[0].compile() + "\n"
+	else:
+		bytecode += tabs + "return\n"
+
+	return bytecode
+
+# noeud de déclaration
+@addToClass(AST.DeclarationNode)
+def compile(self):
+	tabs = getIndent()
+	global tabcounter
+	bytecode = ""
+	if not self.func:
+		bytecode += tabs + self.tok + " = None\n"
+	else:
+		bytecode += tabs + "def " + self.tok + "("
+		if (len(self.children) > 1):
+			bytecode += self.children[0].compile()
+		bytecode += "):\n"
+		tabcounter += 1
+		bytecode += tabs + self.children[1].compile()
+		tabcounter -= 1
+		bytecode += "\n"
+	return bytecode
+
+# noeud de paramètres
+@addToClass(AST.ParamListNode)
+def compile(self):
+	bytecode = ""
+	for c in self.children[:-1]:
+		bytecode += c.tok + ", "
+	bytecode += self.children[-1].tok
+	return bytecode
 
 if __name__ == "__main__":
     from parser_C2PC import parse
