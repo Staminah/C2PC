@@ -13,7 +13,12 @@ precedence = (
     ('nonassoc', 'ELSE'),
 )
 
-vars = {}
+class ParseError(Exception):
+    "Exception raised whenever a parsing error occurs."
+
+    pass
+
+vars = []
 
 def p_programme_statement(p):
 	''' programme : statement '''
@@ -27,7 +32,8 @@ def p_statement(p):
 	''' statement : iteration_statement
         | compound_statement
         | expression_statement
-        | selection_statement '''
+        | selection_statement
+        | external_declaration '''
 	p[0] = p[1]
 
 def p_expression_statement(p):
@@ -55,8 +61,14 @@ def p_selection_statement_02(p):
     p[0] = AST.IfNode([p[3], p[5], p[7]])
 
 def p_assign(p):
-	''' assignation : ID ASSIGN expression '''
-	p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
+    ''' assignation : ID ASSIGN expression '''
+    for id in vars:
+        print(id)
+    if(p[1] not in vars):
+        p_error(p)
+        print("hello assign")
+    else:
+        p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
 def p_expression_assign(p):
     '''expression : logical_expression '''
@@ -105,8 +117,12 @@ def p_expression_op_02(p):
     p[0] = p[1]
 
 def p_primary_expression_var(p):
-	''' primary_expression : ID '''
-	p[0] = AST.TokenNode(p[1])
+    ''' primary_expression : ID '''
+    if(p[1] not in vars):
+        p_error(p)
+        print("hello primary ID")
+    else:
+        p[0] = AST.TokenNode(p[1])
 
 def p_primary_expression_num(p):
     ''' primary_expression : INUMBER
@@ -117,12 +133,72 @@ def p_primary_expression_par(p):
     '''primary_expression : LPAREN expression RPAREN '''
     p[0] = p[2]
 
-# def p_type_specifier(t):
-#     '''type_specifier : INT
-#                       | CHAR
-#                       | FLOAT '''
-#     t[0] = BaseType(t[1])
+def p_type_specifier(p):
+    '''type_specifier : INT
+                      | CHAR
+                      | FLOAT '''
+    p[0] = p[1]
 
+def p_external_declaration(p):
+    '''external_declaration : function_definition
+                            | declaration'''
+    p[0] = p[1]
+
+def p_function_definition_01(p):
+    '''function_definition : type_specifier declarator compound_statement'''
+    if(p[2].tok in vars):
+        print("hello Declaration Func")
+        p_error(p)
+    else:
+        print("AJOUT DE --- DANS VARS : ", p[2].tok)
+        vars.append(p[2].tok)
+        p[2].setType(p[1])
+        p[2].addChildren(p[3])
+        p[0] = p[2]
+
+def p_declaration_01(p):
+    '''declaration : type_specifier declarator SEMICOLON'''
+    if(p[2].tok in vars):
+        print("hello Declaration Var")
+        p_error(p)
+    else:
+        print("AJOUT DE --- DANS VARS : ", p[2].tok)
+        vars.append(p[2].tok)
+        p[2].setType(p[1])
+        p[0] = p[2]
+
+def p_declarator_01(p):
+    '''declarator : direct_declarator'''
+    p[0] = p[1]
+
+def p_direct_declarator_01(p):
+    '''direct_declarator : ID'''
+    p[0] = AST.DeclarationNode(p[1])
+
+def p_direct_declarator_02(p):
+    '''direct_declarator : direct_declarator LPAREN parameter_list RPAREN'''
+    p[1].setFunc(True)
+    p[1].addChildren(p[3])
+    p[0] = p[1]
+
+def p_direct_declarator_03(p):
+    '''direct_declarator : direct_declarator LPAREN RPAREN'''
+    p[1].setFunc(True)
+    p[0] = p[1]
+
+def p_parameter_list_01(p):
+    '''parameter_list : parameter_declaration'''
+    p[0] = AST.ParamListNode(p[1])
+
+def p_parameter_list_02(p):
+    '''parameter_list : parameter_list COMMA parameter_declaration'''
+    p[1].addChildren(p[3])
+    p[0] = p[1]
+
+def p_parameter_declaration(p):
+    '''parameter_declaration : type_specifier declarator'''
+    # NOTE: this is the same code as p_declaration_01!
+    p_declaration_01(p)
 
 def p_error(p) :
 	if p is not None:

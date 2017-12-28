@@ -12,7 +12,7 @@ import pydot
 
 class Node:
     count = 0
-    type = 'Node (unspecified)'
+    node_type = 'Node (unspecified)'
     shape = 'ellipse'
     def __init__(self,children=None):
         self.ID = str(Node.count)
@@ -27,12 +27,15 @@ class Node:
     def addNext(self,next):
         self.next.append(next)
 
+    def addChildren(self,child):
+        self.children.append(child)
+
     def asciitree(self, prefix=''):
         result = "%s%s\n" % (prefix, repr(self))
         prefix += '|  '
         for c in self.children:
             if not isinstance(c,Node):
-                result += "%s*** Error: Child of type %r: %r\n" % (prefix,type(c),c)
+                result += "%s*** Error: Child of node_type %r: %r\n" % (prefix,type(c),c)
                 continue
             result += c.asciitree(prefix)
         return result
@@ -41,7 +44,7 @@ class Node:
         return self.asciitree()
 
     def __repr__(self):
-        return self.type
+        return self.node_type
 
     def makegraphicaltree(self, dot=None, edgeLabels=True):
             if not dot: dot = pydot.Dot()
@@ -90,10 +93,10 @@ class Node:
             return graph
 
 class ProgramNode(Node):
-    type = 'Program'
+    node_type = 'Program'
 
 class TokenNode(Node):
-    type = 'token'
+    node_type = 'token'
     def __init__(self, tok):
         Node.__init__(self)
         self.tok = tok
@@ -114,19 +117,19 @@ class OpNode(Node):
         return "%s (%s)" % (self.op, self.nbargs)
 
 class AssignNode(Node):
-    type = '='
+    node_type = '='
 
 class PrintNode(Node):
-    type = 'print'
+    node_type = 'print'
 
 class WhileNode(Node):
-    type = 'while'
+    node_type = 'while'
 
 class ForNode(Node):
-    type = 'for'
+    node_type = 'for'
 
 class IfNode(Node):
-    type = 'if'
+    node_type = 'if'
 
 class ComparatorNode(Node):
     def __init__(self, op, children):
@@ -152,10 +155,33 @@ class LogicalNode(Node):
     def __repr__(self):
         return "%s (%s)" % (self.op, self.nbargs)
 
+class DeclarationNode(Node):
+    node_type = 'Declaration'
+    def __init__(self, tok):
+        Node.__init__(self)
+        self.tok = tok
+        self.type = type
+        self.func = False
+
+    def __repr__(self):
+        func_str = ""
+        if(self.func):
+            func_str = "( )"
+        return "%s %s %s" % (self.type, self.tok, func_str)
+
+    def setFunc(self, val):
+        self.func = val
+
+    def setType(self, val):
+        self.type = val
+
 class EntryNode(Node):
-    type = 'ENTRY'
+    node_type = 'ENTRY'
     def __init__(self):
         Node.__init__(self, None)
+
+class ParamListNode(Node):
+    node_type = 'ParamList'
 
 def addToClass(cls):
     ''' Décorateur permettant d'ajouter la fonction décorée en tant que méthode
