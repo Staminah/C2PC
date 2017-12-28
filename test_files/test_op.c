@@ -10,3 +10,8 @@ int calc(int a, int b) {
 
     return toto;
 }
+
+int a;
+int b;
+
+calc(a,b);

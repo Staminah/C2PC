@@ -63,11 +63,11 @@ def p_selection_statement_02(p):
 
 def p_assign(p):
     ''' assignation : ID ASSIGN expression '''
-    if(p[1] not in vars):
-        p_error(p)
-        print("hello assign")
-    else:
-        p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
+    # if(p[1] not in vars):
+    #     p_error(p)
+    #     print("hello assign")
+    # else:
+    p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
 def p_expression_assign(p):
     '''expression : logical_expression '''
@@ -141,11 +141,7 @@ def p_unary_expression_04(p):
 
 def p_primary_expression_var(p):
     ''' primary_expression : ID '''
-    if(p[1] not in vars):
-        p_error(p)
-        print("hello primary ID : ", p[1])
-    else:
-        p[0] = AST.TokenNode(p[1])
+    p[0] = AST.TokenNode(p[1])
 
 def p_primary_expression_num(p):
     ''' primary_expression : INUMBER
@@ -172,15 +168,23 @@ def p_postfix_expression_01(p):
 
 def p_postfix_expression_02(p):
     '''postfix_expression : postfix_expression LPAREN argument_expression_list RPAREN'''
-    node = AST.FunctionExpressionNode(p[1].tok)
-    node.setFunc(True)
-    node.addChildren(p[3])
-    p[0] = node
+    if(p[1].tok not in vars):
+        p_error(p)
+        print("hello postfix ID : ", p[1].tok)
+    else:
+        node = AST.FunctionExpressionNode(p[1].tok)
+        node.setFunc(True)
+        node.addChildren(p[3])
+        p[0] = node
 
 def p_postfix_expression_03(p):
     '''postfix_expression : postfix_expression LPAREN RPAREN'''
-    p[0] = AST.FunctionExpressionNode(p[1].tok)
-    p[0].setFunc(True)
+    if(p[1].tok not in vars):
+        p_error(p)
+        print("hello postfix ID : ", p[1].tok)
+    else:
+        p[0] = AST.FunctionExpressionNode(p[1].tok)
+        p[0].setFunc(True)
 
 # def p_postfix_expression_04(p):
 #     '''postfix_expression : postfix_expression LBRACKET expression RBRACKET'''
@@ -227,14 +231,14 @@ def p_function_definition_01(p):
 
 def p_declaration_01(p):
     '''declaration : type_specifier declarator SEMICOLON'''
-    if(p[2].tok in vars):
-        print("hello Declaration Var")
-        p_error(p)
-    else:
-        print("AJOUT DE --- DANS VARS : ", p[2].tok)
-        vars[p[2].tok] = "var"
-        p[2].setType(p[1])
-        p[0] = p[2]
+    # if(p[2].tok in vars):
+    #     print("hello Declaration Var")
+    #     p_error(p)
+    # else:
+    #     print("AJOUT DE --- DANS VARS : ", p[2].tok)
+    #     vars[p[2].tok] = "var"
+    p[2].setType(p[1])
+    p[0] = p[2]
 
 def p_declarator_01(p):
     '''declarator : direct_declarator'''
