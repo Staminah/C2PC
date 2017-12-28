@@ -141,3 +141,6 @@ $RECYCLE.BIN/
 # Remove PDF and Python files in test files
 test_files/*.pdf
 test_files/*.py
+
+# Remove generated files
+generated/*

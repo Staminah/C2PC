@@ -1,7 +1,12 @@
-int doubleValue(int x)
+int doubleValue()
 {
-  return x*x;
+    int a;
+    int b;
+    return a*b;
 }
 
+int x;
+x = 2;
+
 int y;
-y = 2;
+y = doubleValue();

@@ -152,11 +152,11 @@ def p_postfix_expression_02(p):
     node.setFunc(True)
     node.addChildren(p[3])
     p[0] = node
-    pass
 
 def p_postfix_expression_03(p):
     '''postfix_expression : postfix_expression LPAREN RPAREN'''
-    p[0] = AST.FunctionExpressionNode(p[1])
+    p[0] = AST.FunctionExpressionNode(p[1].tok)
+    p[0].setFunc(True)
 
 # def p_postfix_expression_04(p):
 #     '''postfix_expression : postfix_expression LBRACKET expression RBRACKET'''
@@ -195,6 +195,11 @@ def p_function_definition_01(p):
         p[2].setType(p[1])
         p[2].addChildren(p[3])
         p[0] = p[2]
+        # -- Suppr. des paramètres --
+        if (len(p[2].children) > 0):
+            if (type(p[2].children[0]) is AST.ParamListNode):
+                for c in p[2].children[0].children:
+                    vars.pop(c.tok, None)
 
 def p_declaration_01(p):
     '''declaration : type_specifier declarator SEMICOLON'''

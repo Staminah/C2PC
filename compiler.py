@@ -146,12 +146,14 @@ def compile(self):
 	if not self.func:
 		bytecode += tabs + self.tok + " = None\n"
 	else:
+		number = 0
 		bytecode += tabs + "def " + self.tok + "("
 		if (len(self.children) > 1):
 			bytecode += self.children[0].compile()
+			number += 1
 		bytecode += "):\n"
 		tabcounter += 1
-		bytecode += tabs + self.children[1].compile()
+		bytecode += tabs + self.children[number].compile()
 		tabcounter -= 1
 		bytecode += "\n"
 	return bytecode
@@ -163,6 +165,25 @@ def compile(self):
 	for c in self.children[:-1]:
 		bytecode += c.tok + ", "
 	bytecode += self.children[-1].tok
+	return bytecode
+
+# noeud d'arguments
+@addToClass(AST.ArgListNode)
+def compile(self):
+	bytecode = ""
+	for c in self.children[:-1]:
+		bytecode += c.tok + ", "
+	bytecode += self.children[-1].tok
+	return bytecode
+
+# noeud d'appel de méthodes
+@addToClass(AST.FunctionExpressionNode)
+def compile(self):
+	bytecode = ""
+	if (len(self.children) > 0):
+		bytecode += self.tok + "(" + self.children[0].compile() + ")"
+	else:
+		bytecode += self.tok + "()"
 	return bytecode
 
 if __name__ == "__main__":
