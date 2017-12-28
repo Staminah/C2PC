@@ -158,8 +158,8 @@ class LogicalNode(Node):
     def __repr__(self):
         return "%s (%s)" % (self.op, self.nbargs)
 
-class DeclarationNode(Node):
-    node_type = 'Declaration'
+class FunctionNode(Node):
+    node_type = 'FunctionExpression'
     def __init__(self, tok):
         Node.__init__(self)
         self.tok = tok
@@ -178,6 +178,16 @@ class DeclarationNode(Node):
     def setType(self, val):
         self.type = val
 
+class FunctionExpressionNode(FunctionNode):
+    def __repr__(self):
+        func_str = ""
+        if(self.func):
+            func_str = "( )"
+        return "%s %s" % (self.tok, func_str)
+
+class DeclarationNode(FunctionNode):
+    pass
+
 class EntryNode(Node):
     node_type = 'ENTRY'
     def __init__(self):
@@ -185,6 +195,9 @@ class EntryNode(Node):
 
 class ParamListNode(Node):
     node_type = 'ParamList'
+
+class ArgListNode(Node):
+    node_type = 'ArgList'
 
 def addToClass(cls):
     ''' Décorateur permettant d'ajouter la fonction décorée en tant que méthode

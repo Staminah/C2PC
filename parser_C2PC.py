@@ -112,14 +112,14 @@ def p_expression_op_01(p):
     p[0] = AST.OpNode(p[2], [p[1], p[3]])
 
 def p_expression_op_02(p):
-    '''op_expression : primary_expression '''
+    '''op_expression : postfix_expression'''
     p[0] = p[1]
 
 def p_primary_expression_var(p):
     ''' primary_expression : ID '''
     if(p[1] not in vars):
         p_error(p)
-        print("hello primary ID")
+        print("hello primary ID : ", p[1])
     else:
         p[0] = AST.TokenNode(p[1])
 
@@ -139,6 +139,39 @@ def p_return_01(p):
 def p_return_02(p):
     ''' return_statement : RETURN expression SEMICOLON '''
     p[0] = AST.ReturnNode(p[2])
+
+# -------------------------------------
+
+def p_postfix_expression_01(p):
+    '''postfix_expression : primary_expression'''
+    p[0] = p[1]
+
+def p_postfix_expression_02(p):
+    '''postfix_expression : postfix_expression LPAREN argument_expression_list RPAREN'''
+    node = AST.FunctionExpressionNode(p[1].tok)
+    node.setFunc(True)
+    node.addChildren(p[3])
+    p[0] = node
+    pass
+
+def p_postfix_expression_03(p):
+    '''postfix_expression : postfix_expression LPAREN RPAREN'''
+    p[0] = AST.FunctionExpressionNode(p[1])
+
+# def p_postfix_expression_04(p):
+#     '''postfix_expression : postfix_expression LBRACKET expression RBRACKET'''
+#     p[0] = ArrayExpression(t[1], t[3])
+
+def p_argument_expression_list_01(p):
+    '''argument_expression_list : expression'''
+    p[0] = AST.ArgListNode(p[1])
+
+def p_argument_expression_list_02(p):
+    '''argument_expression_list : argument_expression_list COMMA expression'''
+    p[1].addChildren(p[3])
+    p[0] = p[1]
+
+# ----------------------------------
 
 def p_type_specifier(p):
     '''type_specifier : INT
