@@ -131,6 +131,9 @@ class ForNode(Node):
 class IfNode(Node):
     node_type = 'if'
 
+class ReturnNode(Node):
+    node_type = 'return'
+
 class ComparatorNode(Node):
     def __init__(self, op, children):
         Node.__init__(self,children)

@@ -18,7 +18,7 @@ class ParseError(Exception):
 
     pass
 
-vars = []
+vars = dict()
 
 def p_programme_statement(p):
 	''' programme : statement '''
@@ -33,7 +33,8 @@ def p_statement(p):
         | compound_statement
         | expression_statement
         | selection_statement
-        | external_declaration '''
+        | external_declaration
+        | return_statement '''
 	p[0] = p[1]
 
 def p_expression_statement(p):
@@ -62,8 +63,6 @@ def p_selection_statement_02(p):
 
 def p_assign(p):
     ''' assignation : ID ASSIGN expression '''
-    for id in vars:
-        print(id)
     if(p[1] not in vars):
         p_error(p)
         print("hello assign")
@@ -133,6 +132,14 @@ def p_primary_expression_par(p):
     '''primary_expression : LPAREN expression RPAREN '''
     p[0] = p[2]
 
+def p_return_01(p):
+    ''' return_statement : RETURN SEMICOLON '''
+    p[0] = AST.ReturnNode()
+
+def p_return_02(p):
+    ''' return_statement : RETURN expression SEMICOLON '''
+    p[0] = AST.ReturnNode(p[2])
+
 def p_type_specifier(p):
     '''type_specifier : INT
                       | CHAR
@@ -150,8 +157,8 @@ def p_function_definition_01(p):
         print("hello Declaration Func")
         p_error(p)
     else:
-        print("AJOUT DE --- DANS VARS : ", p[2].tok)
-        vars.append(p[2].tok)
+        print("AJOUT DE --- DANS FUNC : ", p[2].tok)
+        vars[p[2].tok] = "func"
         p[2].setType(p[1])
         p[2].addChildren(p[3])
         p[0] = p[2]
@@ -163,7 +170,7 @@ def p_declaration_01(p):
         p_error(p)
     else:
         print("AJOUT DE --- DANS VARS : ", p[2].tok)
-        vars.append(p[2].tok)
+        vars[p[2].tok] = "var"
         p[2].setType(p[1])
         p[0] = p[2]
 
