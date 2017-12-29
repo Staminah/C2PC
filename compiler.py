@@ -3,6 +3,7 @@ from AST import addToClass
 
 tabcounter = 0
 
+# indentation python
 def getIndent():
 	tab = ""
 	for i in range(0, tabcounter):
@@ -49,9 +50,19 @@ def compile(self):
 @addToClass(AST.OpNode)
 def compile(self):
 	bytecode = ""
-	bytecode += "(" + self.children[0].compile() + " "
-	bytecode += self.op
-	bytecode += " " + self.children[1].compile() + ")"
+	# Binaire
+	if (len(self.children) == 2):
+		bytecode += "(" + self.children[0].compile() + " "
+		bytecode += self.op
+		bytecode += " " + self.children[1].compile() + ")"
+	# Unaire
+	elif (len(self.children) == 1):
+		if self.op == "!":
+			bytecode += "not " + self.children[0].compile()
+		elif self.op == "+":
+			bytecode += self.children[0].compile()
+		else:
+			bytecode += self.op + self.children[0].compile()
 	return bytecode
 
 # noeud de boucle while
@@ -79,22 +90,21 @@ def compile(self):
 	bytecode += self.children[2].compile()
 	tabcounter -= 1
 
-	# Version pythonique complexe avec un vrai for (traite < et <=)
-	bytecode += "'''\n"
-	if (type(self.children[0]) is AST.AssignNode):
-		bytecode += tabs + "for " + self.children[0].children[0].compile() + " in xrange(" + self.children[0].children[1].compile() + ", "
-	if (type(self.children[1]) is AST.ComparatorNode):
-		if (self.children[1].op == "<"):
-			bytecode += self.children[1].children[1].compile() + ", "
-		elif (self.children[1].op == "<="):
-			number = int(self.children[1].children[1].compile()) + 1
-			bytecode += "{}, ".format(number)
-	if (type(self.children[2]) is AST.AssignNode):
-		bytecode += self.children[2].children[1].children[1].compile() + "):\n"
-	tabcounter += 1
-	bytecode += self.children[3].compile()
-	tabcounter -= 1
-	bytecode += "'''\n"
+	# Version pythonique complexe avec un vrai for (traite juste < et <=)
+
+	# if (type(self.children[0]) is AST.AssignNode):
+	# 	bytecode += tabs + "for " + self.children[0].children[0].compile() + " in xrange(" + self.children[0].children[1].compile() + ", "
+	# if (type(self.children[1]) is AST.ComparatorNode):
+	# 	if (self.children[1].op == "<"):
+	# 		bytecode += self.children[1].children[1].compile() + ", "
+	# 	elif (self.children[1].op == "<="):
+	# 		number = int(self.children[1].children[1].compile()) + 1
+	# 		bytecode += "{}, ".format(number)
+	# if (type(self.children[2]) is AST.AssignNode):
+	# 	bytecode += self.children[2].children[1].children[1].compile() + "):\n"
+	# tabcounter += 1
+	# bytecode += self.children[3].compile()
+	# tabcounter -= 1
 
 	return bytecode
 
