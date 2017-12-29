@@ -170,7 +170,7 @@ class FunctionNode(Node):
         func_str = ""
         if(self.func):
             func_str = "( )"
-        return "%s %s %s" % (self.type, self.tok, func_str)
+        return "%s %s%s" % (self.type, self.tok, func_str)
 
     def setFunc(self, val):
         self.func = val
@@ -183,7 +183,7 @@ class FunctionExpressionNode(FunctionNode):
         func_str = ""
         if(self.func):
             func_str = "( )"
-        return "%s %s" % (self.tok, func_str)
+        return "%s%s" % (self.tok, func_str)
 
 class DeclarationNode(FunctionNode):
     pass

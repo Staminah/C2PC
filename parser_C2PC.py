@@ -20,6 +20,8 @@ class ParseError(Exception):
 
 vars = dict()
 
+# PROGRAM -----------------------------------------------------
+
 def p_programme_statement(p):
 	''' programme : statement '''
 	p[0] = AST.ProgramNode(p[1])
@@ -27,6 +29,8 @@ def p_programme_statement(p):
 def p_programme_recursive(p):
 	''' programme : statement programme '''
 	p[0] = AST.ProgramNode([p[1]]+p[2].children)
+
+# STATEMENT ----------------------------------------------------
 
 def p_statement(p):
 	''' statement : iteration_statement
@@ -45,6 +49,8 @@ def p_compound_statement_01(p):
     '''compound_statement : LBRACE programme RBRACE'''
     p[0] = p[2]
 
+# ITERATION STATEMENT -----------------------------------------
+
 def p_iteration_statement_01(p):
     ''' iteration_statement : WHILE LPAREN expression RPAREN statement '''
     p[0] = AST.WhileNode([p[3],p[5]])
@@ -52,6 +58,8 @@ def p_iteration_statement_01(p):
 def p_iteration_statement_02(p):
     '''iteration_statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement'''
     p[0] = AST.ForNode([p[3], p[4], p[5], p[7]])
+
+# SELECTION STATEMENT -----------------------------------------
 
 def p_selection_statement_01(p):
     '''selection_statement : IF LPAREN expression RPAREN statement %prec IFX '''
@@ -61,6 +69,8 @@ def p_selection_statement_02(p):
     '''selection_statement : IF LPAREN expression RPAREN statement ELSE statement'''
     p[0] = AST.IfNode([p[3], p[5], p[7]])
 
+# ASSIGN --------------------------------------------------
+
 def p_assign(p):
     ''' assignation : ID ASSIGN expression '''
     # if(p[1] not in vars):
@@ -69,9 +79,13 @@ def p_assign(p):
     # else:
     p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
+# EXPRESSION ---------------------------------------------
+
 def p_expression_assign(p):
     '''expression : logical_expression '''
     p[0] = p[1]
+
+# LOGICAL EXPRESSION ---------------------------------------
 
 def p_logical_expression_01(p):
     '''logical_expression : equality_expression'''
@@ -82,6 +96,8 @@ def p_logical_expression_02(p):
                            | logical_expression DOUBLE_PIPE equality_expression'''
     p[0] = AST.LogicalNode(p[2],[p[1],p[3]])
 
+# EQUALITY EXPRESSION --------------------------------------
+
 def p_equality_expression_01(p):
     '''equality_expression : relational_expression'''
     p[0] = p[1]
@@ -90,6 +106,8 @@ def p_equality_expression_02(p):
     '''equality_expression : equality_expression EQ relational_expression
                            | equality_expression NOT_EQ relational_expression'''
     p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
+
+# RELATIONAL EXPRESSION -------------------------------------
 
 def p_relational_expression_01(p):
     '''relational_expression : additive_expression
@@ -103,6 +121,8 @@ def p_relational_expression_02(p):
                              | relational_expression GREATER_EQ additive_expression'''
     p[0] = AST.ComparatorNode(p[2], [p[1], p[3]])
 
+# ADDITIVE EXPRESSION ----------------------------------------
+
 def p_additive_expression_01(p):
     '''additive_expression : additive_expression PLUS mult_expression
     | additive_expression MINUS mult_expression '''
@@ -111,6 +131,8 @@ def p_additive_expression_01(p):
 def p_additive_expression_02(p):
     '''additive_expression : mult_expression'''
     p[0] = p[1]
+
+# MULTIPLICATIVE EXPRESSION -----------------------------------
 
 def p_mult_expression_01(p):
     '''mult_expression : mult_expression TIMES postfix_expression
@@ -121,6 +143,8 @@ def p_mult_expression_01(p):
 def p_mult_expression_02(p):
     '''mult_expression : unary_expression'''
     p[0] = p[1]
+
+# UNARY EXPRESSION ----------------------------------------
 
 def p_unary_expression_01(p):
     '''unary_expression : postfix_expression'''
@@ -138,6 +162,7 @@ def p_unary_expression_04(p):
     '''unary_expression : EXCLAMATION unary_expression'''
     p[0] = AST.OpNode(p[1], [p[2]])
 
+# PRIMARY EXPRESSION ----------------------------------
 
 def p_primary_expression_var(p):
     ''' primary_expression : ID '''
@@ -148,9 +173,16 @@ def p_primary_expression_num(p):
         | FNUMBER '''
     p[0] = AST.TokenNode(p[1])
 
+def p_primary_expression_char(p):
+    '''primary_expression : CHARACTER'''
+    p[0] = AST.TokenNode(p[1])
+
+
 def p_primary_expression_par(p):
     '''primary_expression : LPAREN expression RPAREN '''
     p[0] = p[2]
+
+# RETURN -------------------------------
 
 def p_return_01(p):
     ''' return_statement : RETURN SEMICOLON '''
@@ -160,7 +192,7 @@ def p_return_02(p):
     ''' return_statement : RETURN expression SEMICOLON '''
     p[0] = AST.ReturnNode(p[2])
 
-# -------------------------------------
+# POSTFIX -------------------------------------
 
 def p_postfix_expression_01(p):
     '''postfix_expression : primary_expression'''
@@ -186,9 +218,11 @@ def p_postfix_expression_03(p):
         p[0] = AST.FunctionExpressionNode(p[1].tok)
         p[0].setFunc(True)
 
-# def p_postfix_expression_04(p):
-#     '''postfix_expression : postfix_expression LBRACKET expression RBRACKET'''
-#     p[0] = ArrayExpression(t[1], t[3])
+def p_postfix_expression_04(p):
+    '''postfix_expression : postfix_expression LBRACKET expression RBRACKET'''
+    p[0] = ArrayExpression(t[1], t[3])
+
+# ARGUMENT LIST ----------------------------------
 
 def p_argument_expression_list_01(p):
     '''argument_expression_list : expression'''
@@ -199,7 +233,7 @@ def p_argument_expression_list_02(p):
     p[1].addChildren(p[3])
     p[0] = p[1]
 
-# ----------------------------------
+# DELCARATION ----------------------------------
 
 def p_type_specifier(p):
     '''type_specifier : INT
@@ -259,6 +293,8 @@ def p_direct_declarator_03(p):
     p[1].setFunc(True)
     p[0] = p[1]
 
+# PARAMETER LIST ------------------------------------------
+
 def p_parameter_list_01(p):
     '''parameter_list : parameter_declaration'''
     p[0] = AST.ParamListNode(p[1])
@@ -273,6 +309,8 @@ def p_parameter_declaration(p):
     # NOTE: this is the same code as p_declaration_01!
     p_declaration_01(p)
 
+ # ERROR -------------------------------------------
+
 def p_error(p) :
 	if p is not None:
 		print("Erreur de syntaxe à la ligne %s"%(p.lineno))
@@ -280,10 +318,14 @@ def p_error(p) :
 	else:
 		print("Unexpected end of input")
 
+# PARSE ------------------------------------------
+
 def parse(program):
     return yacc.parse(program)
 
 parser = yacc.yacc(outputdir = 'generated')
+
+# MAIN -------------------------------------------
 
 if __name__ == "__main__" :
 

@@ -37,6 +37,8 @@ tokens = (
     'RPAREN',
     'LBRACE',
     'RBRACE',
+    'LBRACKET',
+    'RBRACKET',
     'ASSIGN',
     'GREATER',
     'LESS',
@@ -97,6 +99,8 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LBRACE = r'{'
 t_RBRACE = r'}'
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
 t_ASSIGN = r'='
 t_GREATER = r'>'
 t_LESS = r'<'
