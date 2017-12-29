@@ -1,9 +1,7 @@
-if(i!=3){
-  toto= toto+2;
+if (kek == 2) {
+    toto = 3;
 }
-else{
-  toto = 2;
+else {
+    int maurice;
+    maurice = kek;
 }
-
-
-
