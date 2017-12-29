@@ -69,20 +69,33 @@ def p_selection_statement_02(p):
     '''selection_statement : IF LPAREN expression RPAREN statement ELSE statement'''
     p[0] = AST.IfNode([p[3], p[5], p[7]])
 
-# ASSIGN --------------------------------------------------
+# EXPRESSION ---------------------------------------------
 
-def p_assign(p):
-    ''' assignation : ID ASSIGN expression '''
+def p_expression_assign(p):
+    '''expression : assignment_expression '''
+    p[0] = p[1]
+
+
+# ASSIGNMENT EXPRESSION --------------------------------------------------
+
+def p_assignment_expression_01(p):
+    ''' assignment_expression : logical_expression '''
+    p[0] = p[1]
+
+def p_assignment_expression_02(p):
+    ''' assignment_expression : unary_expression assignment_operator assignment_expression '''
     # if(p[1] not in vars):
     #     p_error(p)
     #     print("hello assign")
     # else:
-    p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
+    p[0] = AST.AssignNode(p[2], [p[1] ,p[3]])
 
-# EXPRESSION ---------------------------------------------
-
-def p_expression_assign(p):
-    '''expression : logical_expression '''
+def p_assignment_operator(p):
+    ''' assignment_operator : ASSIGN
+                            | EQ_PLUS
+                            | EQ_MINUS
+                            | EQ_DIV
+                            | EQ_TIMES'''
     p[0] = p[1]
 
 # LOGICAL EXPRESSION ---------------------------------------
@@ -93,7 +106,7 @@ def p_logical_expression_01(p):
 
 def p_logical_expression_02(p):
     '''logical_expression : logical_expression DOUBLE_AMPERSAND equality_expression
-                           | logical_expression DOUBLE_PIPE equality_expression'''
+                          | logical_expression DOUBLE_PIPE equality_expression'''
     p[0] = AST.LogicalNode(p[2],[p[1],p[3]])
 
 # EQUALITY EXPRESSION --------------------------------------
@@ -110,8 +123,7 @@ def p_equality_expression_02(p):
 # RELATIONAL EXPRESSION -------------------------------------
 
 def p_relational_expression_01(p):
-    '''relational_expression : additive_expression
-    | assignation '''
+    '''relational_expression : additive_expression'''
     p[0] = p[1]
 
 def p_relational_expression_02(p):
@@ -162,36 +174,6 @@ def p_unary_expression_04(p):
     '''unary_expression : EXCLAMATION unary_expression'''
     p[0] = AST.OpNode(p[1], [p[2]])
 
-# PRIMARY EXPRESSION ----------------------------------
-
-def p_primary_expression_var(p):
-    ''' primary_expression : ID '''
-    p[0] = AST.TokenNode(p[1])
-
-def p_primary_expression_num(p):
-    ''' primary_expression : INUMBER
-        | FNUMBER '''
-    p[0] = AST.TokenNode(p[1])
-
-def p_primary_expression_char(p):
-    '''primary_expression : CHARACTER'''
-    p[0] = AST.TokenNode(p[1])
-
-
-def p_primary_expression_par(p):
-    '''primary_expression : LPAREN expression RPAREN '''
-    p[0] = p[2]
-
-# RETURN -------------------------------
-
-def p_return_01(p):
-    ''' return_statement : RETURN SEMICOLON '''
-    p[0] = AST.ReturnNode()
-
-def p_return_02(p):
-    ''' return_statement : RETURN expression SEMICOLON '''
-    p[0] = AST.ReturnNode(p[2])
-
 # POSTFIX -------------------------------------
 
 def p_postfix_expression_01(p):
@@ -218,9 +200,6 @@ def p_postfix_expression_03(p):
         p[0] = AST.FunctionExpressionNode(p[1].tok)
         p[0].setFunc(True)
 
-def p_postfix_expression_04(p):
-    '''postfix_expression : postfix_expression LBRACKET expression RBRACKET'''
-    p[0] = ArrayExpression(t[1], t[3])
 
 # ARGUMENT LIST ----------------------------------
 
@@ -233,12 +212,59 @@ def p_argument_expression_list_02(p):
     p[1].addChildren(p[3])
     p[0] = p[1]
 
+
+# PRIMARY EXPRESSION ----------------------------------
+
+def p_primary_expression_var(p):
+    ''' primary_expression : ID '''
+    p[0] = AST.TokenNode(p[1])
+
+def p_primary_expression_num(p):
+    ''' primary_expression : INUMBER
+        | FNUMBER '''
+    p[0] = AST.TokenNode(p[1])
+
+def p_primary_expression_char(p):
+    '''primary_expression : CHARACTER'''
+    p[0] = AST.TokenNode(p[1])
+
+
+def p_primary_expression_par(p):
+    '''primary_expression : LPAREN expression RPAREN '''
+    p[0] = p[2]
+
+def p_primary_expression_string(p):
+    '''primary_expression : STRING'''
+    p[0] = AST.TokenNode(p[1])
+
+# RETURN -------------------------------
+
+def p_return_01(p):
+    ''' return_statement : RETURN SEMICOLON '''
+    p[0] = AST.ReturnNode()
+
+def p_return_02(p):
+    ''' return_statement : RETURN expression SEMICOLON '''
+    p[0] = AST.ReturnNode(p[2])
+
 # DELCARATION ----------------------------------
 
 def p_type_specifier(p):
     '''type_specifier : INT
                       | CHAR
-                      | FLOAT '''
+                      | FLOAT
+                      | SHORT
+                      | LONG
+                      | DOUBLE
+                      | VOID '''
+    p[0] = p[1]
+
+def p_declaration_specifier(p):
+    ''' declaration_specifier : type_specifier '''
+    p[0] = p[1]
+
+def p_initilizer(p):
+    ''' initializer : assignment_expression '''
     p[0] = p[1]
 
 def p_external_declaration(p):
@@ -247,7 +273,7 @@ def p_external_declaration(p):
     p[0] = p[1]
 
 def p_function_definition_01(p):
-    '''function_definition : type_specifier declarator compound_statement'''
+    '''function_definition : declaration_specifier declarator compound_statement'''
     if(p[2].tok in vars):
         print("hello Declaration Func")
         p_error(p)
@@ -264,15 +290,26 @@ def p_function_definition_01(p):
                     vars.pop(c.tok, None)
 
 def p_declaration_01(p):
-    '''declaration : type_specifier declarator SEMICOLON'''
+    '''declaration : declaration_specifier init_declarator SEMICOLON'''
     # if(p[2].tok in vars):
     #     print("hello Declaration Var")
     #     p_error(p)
     # else:
     #     print("AJOUT DE --- DANS VARS : ", p[2].tok)
     #     vars[p[2].tok] = "var"
-    p[2].setType(p[1])
+    if type(p[2]) is AST.AssignNode:
+        p[2].children[0].setType(p[1])
+    else:
+        p[2].setType(p[1])
     p[0] = p[2]
+
+def p_init_declarator_01(p):
+    ''' init_declarator : declarator'''
+    p[0] = p[1]
+
+def p_init_declarator_02(p):
+    ''' init_declarator : declarator ASSIGN initializer'''
+    p[0] = AST.AssignNode(p[2], [p[1], p[3]])
 
 def p_declarator_01(p):
     '''declarator : direct_declarator'''
@@ -292,6 +329,11 @@ def p_direct_declarator_03(p):
     '''direct_declarator : direct_declarator LPAREN RPAREN'''
     p[1].setFunc(True)
     p[0] = p[1]
+
+def p_direct_declarator_04(p):
+    '''direct_declarator : ID LBRACKET RBRACKET'''
+    p[0] = AST.DeclarationNode(p[1])
+    p[0].setArray(True)
 
 # PARAMETER LIST ------------------------------------------
 

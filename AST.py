@@ -116,8 +116,11 @@ class OpNode(Node):
     def __repr__(self):
         return "%s (%s)" % (self.op, self.nbargs)
 
-class AssignNode(Node):
-    node_type = '='
+class AssignNode(OpNode):
+    node_type = 'AssignmentExrpession'
+
+    def __repr__(self):
+        return "%s" % (self.op)
 
 class PrintNode(Node):
     node_type = 'print'
@@ -134,59 +137,46 @@ class IfNode(Node):
 class ReturnNode(Node):
     node_type = 'return'
 
-class ComparatorNode(Node):
-    def __init__(self, op, children):
-        Node.__init__(self,children)
-        self.op = op
-        try:
-            self.nbargs = len(children)
-        except AttributeError:
-            self.nbargs = 1
+class ComparatorNode(OpNode):
+    node_type = 'ComparatorExpression'
+    pass
 
-    def __repr__(self):
-        return "%s (%s)" % (self.op, self.nbargs)
+class LogicalNode(OpNode):
+    node_type = 'LogicalExpression'
+    pass
 
-class LogicalNode(Node):
-    def __init__(self, op, children):
-        Node.__init__(self,children)
-        self.op = op
-        try:
-            self.nbargs = len(children)
-        except AttributeError:
-            self.nbargs = 1
-
-    def __repr__(self):
-        return "%s (%s)" % (self.op, self.nbargs)
-
-class FunctionNode(Node):
-    node_type = 'FunctionExpression'
+class DeclarationNode(Node):
+    node_type = 'DeclarationExpression'
     def __init__(self, tok):
         Node.__init__(self)
         self.tok = tok
         self.type = type
         self.func = False
+        self.array = False
 
     def __repr__(self):
-        func_str = ""
+        add_str = ""
         if(self.func):
-            func_str = "( )"
-        return "%s %s%s" % (self.type, self.tok, func_str)
+            add_str = "( )"
+        if(self.array):
+            add_str = "[ ]"
+        return "%s %s%s" % (self.type, self.tok, add_str)
 
     def setFunc(self, val):
         self.func = val
 
+    def setArray(self, val):
+        self.array = val
+
     def setType(self, val):
         self.type = val
 
-class FunctionExpressionNode(FunctionNode):
+class FunctionExpressionNode(DeclarationNode):
     def __repr__(self):
         func_str = ""
         if(self.func):
             func_str = "( )"
         return "%s%s" % (self.tok, func_str)
-
-class DeclarationNode(FunctionNode):
-    pass
 
 class EntryNode(Node):
     node_type = 'ENTRY'

@@ -7,8 +7,7 @@ int calc(int a, int b) {
     if((toto > 5)){
 	return;
     }
-    char c; 
-    c = 'x';
+    char c[] = "Hello";
     return toto;
 }
 

@@ -52,8 +52,6 @@ tokens = (
     'DIV',
     'MODULO',
     'EXCLAMATION',
-    'CARET',
-    'DOT',
     'EQ_PLUS',
     'EQ_MINUS',
     'EQ_TIMES',
@@ -114,7 +112,6 @@ t_TIMES = r'\*'
 t_DIV = r'/(?!\*)'
 t_MODULO = r'%'
 t_EXCLAMATION = r'!'
-t_DOT = r'\.'
 t_EQ_PLUS = r'\+='
 t_EQ_MINUS = r'-='
 t_EQ_TIMES = r'\*='
