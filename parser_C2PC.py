@@ -18,7 +18,15 @@ class ParseError(Exception):
 
     pass
 
-vars = dict()
+func_name = dict()
+
+types_dict = {'int':'int',
+         'short':'int',
+         'long':'int',
+         'char':'int',
+         'float':'float',
+         'double':'float'}
+
 
 # PROGRAM -----------------------------------------------------
 
@@ -84,7 +92,7 @@ def p_assignment_expression_01(p):
 
 def p_assignment_expression_02(p):
     ''' assignment_expression : unary_expression assignment_operator assignment_expression '''
-    # if(p[1] not in vars):
+    # if(p[1] not in func_name):
     #     p_error(p)
     #     print("hello assign")
     # else:
@@ -182,7 +190,7 @@ def p_postfix_expression_01(p):
 
 def p_postfix_expression_02(p):
     '''postfix_expression : postfix_expression LPAREN argument_expression_list RPAREN'''
-    if(p[1].tok not in vars):
+    if(p[1].tok not in func_name):
         p_error(p)
         print("hello postfix ID : ", p[1].tok)
     else:
@@ -193,7 +201,7 @@ def p_postfix_expression_02(p):
 
 def p_postfix_expression_03(p):
     '''postfix_expression : postfix_expression LPAREN RPAREN'''
-    if(p[1].tok not in vars):
+    if(p[1].tok not in func_name):
         p_error(p)
         print("hello postfix ID : ", p[1].tok)
     else:
@@ -219,14 +227,20 @@ def p_primary_expression_var(p):
     ''' primary_expression : ID '''
     p[0] = AST.TokenNode(p[1])
 
-def p_primary_expression_num(p):
-    ''' primary_expression : INUMBER
-        | FNUMBER '''
+def p_primary_expression_num_integer(p):
+    ''' primary_expression : INUMBER '''
     p[0] = AST.TokenNode(p[1])
+    p[0].setType('int')
+
+def p_primary_expression_num_float(p):
+    ''' primary_expression : FNUMBER '''
+    p[0] = AST.TokenNode(p[1])
+    p[0].setType('float')
 
 def p_primary_expression_char(p):
     '''primary_expression : CHARACTER'''
     p[0] = AST.TokenNode(p[1])
+    p[0].setType('char')
 
 
 def p_primary_expression_par(p):
@@ -236,6 +250,7 @@ def p_primary_expression_par(p):
 def p_primary_expression_string(p):
     '''primary_expression : STRING'''
     p[0] = AST.TokenNode(p[1])
+    p[0].setType('string')
 
 # RETURN -------------------------------
 
@@ -283,12 +298,12 @@ def p_external_declaration(p):
 
 def p_function_definition_01(p):
     '''function_definition : declaration_specifier declarator compound_statement'''
-    if(p[2].tok in vars):
+    if(p[2].tok in func_name):
         print("hello Declaration Func")
         p_error(p)
     else:
         print("AJOUT DE --- DANS FUNC : ", p[2].tok)
-        vars[p[2].tok] = "func"
+        func_name[p[2].tok] = "func"
         p[2].setType(p[1])
         p[2].addChildren(p[3])
         p[0] = p[2]
@@ -296,16 +311,16 @@ def p_function_definition_01(p):
         if (len(p[2].children) > 0):
             if (type(p[2].children[0]) is AST.ParamListNode):
                 for c in p[2].children[0].children:
-                    vars.pop(c.tok, None)
+                    func_name.pop(c.tok, None)
 
 def p_declaration_01(p):
     '''declaration : declaration_specifier init_declarator SEMICOLON'''
-    # if(p[2].tok in vars):
+    # if(p[2].tok in func_name):
     #     print("hello Declaration Var")
     #     p_error(p)
     # else:
     #     print("AJOUT DE --- DANS VARS : ", p[2].tok)
-    #     vars[p[2].tok] = "var"
+    #     func_name[p[2].tok] = "var"
     if type(p[2]) is AST.AssignNode:
         p[2].children[0].setType(p[1])
     else:

@@ -24,11 +24,17 @@ class Node:
             self.children = [children]
         self.next = []
 
+        self.type = None
+
+
     def addNext(self,next):
         self.next.append(next)
 
     def addChildren(self,child):
         self.children.append(child)
+
+    def setType(self, val):
+        self.type = val
 
     def asciitree(self, prefix=''):
         result = "%s%s\n" % (prefix, repr(self))
@@ -156,7 +162,6 @@ class DeclarationNode(Node):
     def __init__(self, tok):
         Node.__init__(self)
         self.tok = tok
-        self.type = type
         self.func = False
         self.array = False
 
@@ -173,9 +178,6 @@ class DeclarationNode(Node):
 
     def setArray(self, val):
         self.array = val
-
-    def setType(self, val):
-        self.type = val
 
 class FunctionExpressionNode(DeclarationNode):
     def __repr__(self):
