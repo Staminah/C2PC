@@ -41,7 +41,7 @@ class Node:
         prefix += '|  '
         for c in self.children:
             if not isinstance(c,Node):
-                result += "%s*** Error: Child of node_type %r: %r\n" % (prefix,type(c),c)
+                result += "%s*** Error: Child of type %r: %r\n" % (prefix,type(c),c)
                 continue
             result += c.asciitree(prefix)
         return result
@@ -123,7 +123,7 @@ class OpNode(Node):
         return "%s (%s)" % (self.op, self.nbargs)
 
 class AssignNode(OpNode):
-    node_type = 'AssignmentExrpession'
+    node_type = 'AssignmentExpression'
 
     def __repr__(self):
         return "%s" % (self.op)

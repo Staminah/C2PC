@@ -20,14 +20,6 @@ class ParseError(Exception):
 
 func_name = dict()
 
-types_dict = {'int':'int',
-         'short':'int',
-         'long':'int',
-         'char':'int',
-         'float':'float',
-         'double':'float'}
-
-
 # PROGRAM -----------------------------------------------------
 
 def p_programme_statement(p):
@@ -92,10 +84,6 @@ def p_assignment_expression_01(p):
 
 def p_assignment_expression_02(p):
     ''' assignment_expression : unary_expression assignment_operator assignment_expression '''
-    # if(p[1] not in func_name):
-    #     p_error(p)
-    #     print("hello assign")
-    # else:
     p[0] = AST.AssignNode(p[2], [p[1] ,p[3]])
 
 def p_assignment_operator(p):
@@ -192,7 +180,6 @@ def p_postfix_expression_02(p):
     '''postfix_expression : postfix_expression LPAREN argument_expression_list RPAREN'''
     if(p[1].tok not in func_name):
         p_error(p)
-        print("hello postfix ID : ", p[1].tok)
     else:
         node = AST.FunctionExpressionNode(p[1].tok)
         node.setFunc(True)
@@ -203,7 +190,6 @@ def p_postfix_expression_03(p):
     '''postfix_expression : postfix_expression LPAREN RPAREN'''
     if(p[1].tok not in func_name):
         p_error(p)
-        print("hello postfix ID : ", p[1].tok)
     else:
         p[0] = AST.FunctionExpressionNode(p[1].tok)
         p[0].setFunc(True)
@@ -299,10 +285,8 @@ def p_external_declaration(p):
 def p_function_definition_01(p):
     '''function_definition : declaration_specifier declarator compound_statement'''
     if(p[2].tok in func_name):
-        print("hello Declaration Func")
         p_error(p)
     else:
-        print("AJOUT DE --- DANS FUNC : ", p[2].tok)
         func_name[p[2].tok] = "func"
         p[2].setType(p[1])
         p[2].addChildren(p[3])
@@ -315,12 +299,6 @@ def p_function_definition_01(p):
 
 def p_declaration_01(p):
     '''declaration : declaration_specifier init_declarator SEMICOLON'''
-    # if(p[2].tok in func_name):
-    #     print("hello Declaration Var")
-    #     p_error(p)
-    # else:
-    #     print("AJOUT DE --- DANS VARS : ", p[2].tok)
-    #     func_name[p[2].tok] = "var"
     if type(p[2]) is AST.AssignNode:
         p[2].children[0].setType(p[1])
     else:
