@@ -137,6 +137,12 @@ class IfNode(Node):
 class ReturnNode(Node):
     node_type = 'return'
 
+class BreakNode(Node):
+    node_type = 'break'
+
+class ContinueNode(Node):
+    node_type = 'continue'
+
 class ComparatorNode(OpNode):
     node_type = 'ComparatorExpression'
     pass

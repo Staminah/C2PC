@@ -29,6 +29,8 @@ tokens = (
     'FOR',
     'WHILE',
     'RETURN',
+    'BREAK',
+    'CONTINUE',
 
     # Special characters
     'COMMA',
@@ -84,7 +86,9 @@ reserved_words = {
     'else' : 'ELSE',
     'for' : 'FOR',
     'while' : 'WHILE',
-    'return' : 'RETURN'
+    'return' : 'RETURN',
+    'break' : 'BREAK',
+    'continue' : 'CONTINUE'
 }
 
 #  ---------------------------------------------------------------

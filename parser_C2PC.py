@@ -38,7 +38,7 @@ def p_statement(p):
         | expression_statement
         | selection_statement
         | external_declaration
-        | return_statement '''
+        | jump_statement '''
 	p[0] = p[1]
 
 def p_expression_statement(p):
@@ -240,12 +240,21 @@ def p_primary_expression_string(p):
 # RETURN -------------------------------
 
 def p_return_01(p):
-    ''' return_statement : RETURN SEMICOLON '''
+    ''' jump_statement : RETURN SEMICOLON '''
     p[0] = AST.ReturnNode()
 
 def p_return_02(p):
-    ''' return_statement : RETURN expression SEMICOLON '''
+    ''' jump_statement : RETURN expression SEMICOLON '''
     p[0] = AST.ReturnNode(p[2])
+
+def p_break(p):
+    ''' jump_statement : BREAK SEMICOLON '''
+    p[0] = AST.BreakNode()
+
+def p_continue(p):
+    ''' jump_statement : CONTINUE SEMICOLON '''
+    p[0] = AST.ContinueNode()
+
 
 # DELCARATION ----------------------------------
 

@@ -31,7 +31,7 @@ def compile(self):
 	tabs = getIndent()
 	pycode = ""
 	pycode += tabs
-	pycode += "%s = %s\n" % (self.children[0].tok, self.children[1].compile())
+	pycode += "%s %s %s\n" % (self.children[0].tok, self.op, self.children[1].compile())
 	return pycode
 
 # noeud d'affichage
@@ -143,6 +143,22 @@ def compile(self):
 	else:
 		pycode += tabs + "return\n"
 
+	return pycode
+
+# noeud break
+@addToClass(AST.BreakNode)
+def compile(self):
+	tabs = getIndent()
+	pycode = ""
+	pycode += tabs + "break\n"
+	return pycode
+
+# noeud continue
+@addToClass(AST.ContinueNode)
+def compile(self):
+	tabs = getIndent()
+	pycode = ""
+	pycode += tabs + "continue\n"
 	return pycode
 
 # noeud de déclaration
