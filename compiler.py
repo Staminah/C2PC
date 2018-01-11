@@ -259,6 +259,7 @@ def compile(self):
 def type_checking(firstChild, secondChild):
 	global vars_tab
 	global currentContext
+	error = False
 
 	if firstChild.type == None:
 		if (len(firstChild.children) == 2) and (type(firstChild) is AST.OpNode):
@@ -266,6 +267,10 @@ def type_checking(firstChild, secondChild):
 		elif (len(firstChild.children) == 1) and (type(firstChild) is AST.OpNode):
 			if firstChild.children[0].type != None:
 				firstChild.type = firstChild.children[0].type
+			elif firstChild.children[0].tok in vars_tab[currentContext]:
+				firstChild.type = vars_tab[currentContext][firstChild.children[0].tok]
+			else:
+				error = True
 		elif firstChild.tok in vars_tab[currentContext]:
 			firstChild.type = vars_tab[currentContext][firstChild.tok]
 	if secondChild.type == None:
@@ -274,6 +279,10 @@ def type_checking(firstChild, secondChild):
 		elif (len(secondChild.children) == 1) and (type(secondChild) is AST.OpNode):
 			if secondChild.children[0].type != None:
 				secondChild.type = secondChild.children[0].type
+			elif secondChild.children[0].tok in vars_tab[currentContext]:
+				secondChild.type = vars_tab[currentContext][secondChild.children[0].tok]
+			else:
+				error = True
 		elif secondChild.tok in vars_tab[currentContext]:
 			secondChild.type = vars_tab[currentContext][secondChild.tok]
 
@@ -281,11 +290,16 @@ def type_checking(firstChild, secondChild):
 		if firstChild.type != None:
 			return firstChild.type.lower()
 		else:
-			print("There are some assignations/operations with different types in " + currentContext + " context.\nCompilation aborted.")
-			sys.exit(0)
-	elif types_dict[firstChild.type] == types_dict[secondChild.type]:
-		return firstChild.type.lower()
+			error = True
+	elif firstChild.type in types_dict and secondChild.type in types_dict:
+		if types_dict[firstChild.type] == types_dict[secondChild.type]:
+			return firstChild.type.lower()
+		else:
+			error = True
 	else:
+		error = True
+
+	if error:
 		print("There are some assignations/operations with different types in " + currentContext + " context.\nCompilation aborted.")
 		sys.exit(0)
 

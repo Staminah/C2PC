@@ -3,7 +3,7 @@ int calc(int a, int b) {
 
     toto = ((5 + 3) * 9);
     a = 2 + 2 * 4;
-    b = -5+2;
+    b = -tata+2;
     if((toto > 5)){
 	return;
     }
