@@ -261,17 +261,29 @@ def type_checking(firstChild, secondChild):
 	global currentContext
 
 	if firstChild.type == None:
-		if (len(firstChild.children) == 2):
+		if (len(firstChild.children) == 2) and (type(firstChild) is AST.OpNode):
 			firstChild.type = type_checking(firstChild.children[0], firstChild.children[1])
+		elif (len(firstChild.children) == 1) and (type(firstChild) is AST.OpNode):
+			if firstChild.children[0].type != None:
+				firstChild.type = firstChild.children[0].type
 		elif firstChild.tok in vars_tab[currentContext]:
 			firstChild.type = vars_tab[currentContext][firstChild.tok]
 	if secondChild.type == None:
-		if (len(secondChild.children) == 2):
+		if (len(secondChild.children) == 2) and (type(secondChild) is AST.OpNode):
 			secondChild.type = type_checking(secondChild.children[0], secondChild.children[1])
+		elif (len(secondChild.children) == 1) and (type(secondChild) is AST.OpNode):
+			if secondChild.children[0].type != None:
+				secondChild.type = secondChild.children[0].type
 		elif secondChild.tok in vars_tab[currentContext]:
 			secondChild.type = vars_tab[currentContext][secondChild.tok]
 
-	if types_dict[firstChild.type] == types_dict[secondChild.type]:
+	if (type(secondChild) is AST.FunctionExpressionNode):
+		if firstChild.type != None:
+			return firstChild.type.lower()
+		else:
+			print("There are some assignations/operations with different types in " + currentContext + " context.\nCompilation aborted.")
+			sys.exit(0)
+	elif types_dict[firstChild.type] == types_dict[secondChild.type]:
 		return firstChild.type.lower()
 	else:
 		print("There are some assignations/operations with different types in " + currentContext + " context.\nCompilation aborted.")

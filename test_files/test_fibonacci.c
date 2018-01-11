@@ -4,7 +4,7 @@ int second = 1;
 int next;
 int c;
 
-for ( c = 0 ; c < n ; c = c + 1 )
+for ( c = 0 ; c < n ; c += 1 )
 {
     if ( c <= 1 ) {
         next = first + second;
