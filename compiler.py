@@ -206,10 +206,11 @@ def compile(self):
 		vars_tab[context[contextcounter]][self.tok] = self.type.lower()
 		pycode += tabs + self.tok + " = None\n"
 	else:
+		# -- types
 		contextcounter += 1
 		context.append(self.tok)
 		vars_tab[context[contextcounter]] = {}
-
+		# -- code python
 		pycode += tabs + "def " + self.tok + "("
 		if (len(self.children) > 1):
 			pycode += self.children[0].compile()
@@ -219,7 +220,7 @@ def compile(self):
 		pycode += tabs + self.children[number].compile()
 		tabcounter -= 1
 		pycode += "\n"
-
+		# -- types
 		del vars_tab[context[contextcounter]]
 		context.pop(contextcounter)
 		contextcounter -= 1
