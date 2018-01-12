@@ -1,8 +1,9 @@
 import AST
 from AST import addToClass
 
-baseContext = 'main'
-currentContext = baseContext
+context = ["main"]
+contextcounter = 0
+
 tabcounter = 0
 types_dict = {'int':'int',
 			  'short':'int',
@@ -13,7 +14,7 @@ types_dict = {'int':'int',
 	          'double':'float'}
 
 vars_tab = {}
-vars_tab[baseContext] = {}
+vars_tab[context[contextcounter]] = {}
 
 # indentation python
 def getIndent():
@@ -42,7 +43,7 @@ def compile(self):
 def compile(self):
 	# -- types
 	if (type(self.children[0]) is AST.DeclarationNode):
-		vars_tab[currentContext][self.children[0].tok] = self.children[0].type.lower()
+		vars_tab[context[contextcounter]][self.children[0].tok] = self.children[0].type.lower()
 	self.type = type_checking(self.children[0], self.children[1])
 	# -- code python
 	tabs = getIndent()
@@ -65,16 +66,17 @@ def compile(self):
 @addToClass(AST.OpNode)
 def compile(self):
 	global vars_tab
-	global currentContext
+	global context
+	global contextcounter
 
 	pycode = ""
 	# Binaire
 	if (len(self.children) == 2):
 		# -- types
-		if self.children[0].type == None and self.children[0].tok in vars_tab[currentContext]:
-			self.children[0].type = vars_tab[currentContext][self.children[0].tok]
-		elif self.children[1].type == None and self.children[1].tok in vars_tab[currentContext]:
-			self.children[1].type = vars_tab[currentContext][self.children[1].tok]
+		if self.children[0].type == None and self.children[0].tok in vars_tab[context[contextcounter]]:
+			self.children[0].type = vars_tab[context[contextcounter]][self.children[0].tok]
+		elif self.children[1].type == None and self.children[1].tok in vars_tab[context[contextcounter]]:
+			self.children[1].type = vars_tab[context[contextcounter]][self.children[1].tok]
 		self.type = type_checking(self.children[0], self.children[1])
 		# -- code python
 		pycode += "(" + self.children[0].compile() + " "
@@ -193,19 +195,20 @@ def compile(self):
 @addToClass(AST.DeclarationNode)
 def compile(self):
 	tabs = getIndent()
+	global context
+	global contextcounter
 	global tabcounter
-	global baseContext
-	global currentContext
 	global vars_tab
 
 	number = 0
 	pycode = ""
 	if not self.func:
-		vars_tab[currentContext][self.tok] = self.type.lower()
+		vars_tab[context[contextcounter]][self.tok] = self.type.lower()
 		pycode += tabs + self.tok + " = None\n"
 	else:
-		currentContext = self.tok
-		vars_tab[currentContext] = {}
+		contextcounter += 1
+		context.append(self.tok)
+		vars_tab[context[contextcounter]] = {}
 
 		pycode += tabs + "def " + self.tok + "("
 		if (len(self.children) > 1):
@@ -217,19 +220,20 @@ def compile(self):
 		tabcounter -= 1
 		pycode += "\n"
 
-		del vars_tab[currentContext];
-		currentContext = baseContext
+		del vars_tab[context[contextcounter]]
+		context.pop(contextcounter)
+		contextcounter -= 1
 	return pycode
 
 # noeud de paramètres
 @addToClass(AST.ParamListNode)
 def compile(self):
 	# -- types
-	global baseContext
-	global currentContext
+	global context
+	global contextcounter
 	global vars_tab
 	for c in self.children:
-		vars_tab[currentContext][c.tok] = c.type.lower()
+		vars_tab[context[contextcounter]][c.tok] = c.type.lower()
 	# -- code python
 	pycode = ""
 	for c in self.children[:-1]:
@@ -258,7 +262,8 @@ def compile(self):
 
 def type_checking(firstChild, secondChild):
 	global vars_tab
-	global currentContext
+	global contextcounter
+	global context
 	error = False
 
 	if firstChild.type == None:
@@ -267,24 +272,24 @@ def type_checking(firstChild, secondChild):
 		elif (len(firstChild.children) == 1) and (type(firstChild) is AST.OpNode):
 			if firstChild.children[0].type != None:
 				firstChild.type = firstChild.children[0].type
-			elif firstChild.children[0].tok in vars_tab[currentContext]:
-				firstChild.type = vars_tab[currentContext][firstChild.children[0].tok]
+			elif firstChild.children[0].tok in vars_tab[context[contextcounter]]:
+				firstChild.type = vars_tab[context[contextcounter]][firstChild.children[0].tok]
 			else:
 				error = True
-		elif firstChild.tok in vars_tab[currentContext]:
-			firstChild.type = vars_tab[currentContext][firstChild.tok]
+		elif firstChild.tok in vars_tab[context[contextcounter]]:
+			firstChild.type = vars_tab[context[contextcounter]][firstChild.tok]
 	if secondChild.type == None:
 		if (len(secondChild.children) == 2) and (type(secondChild) is AST.OpNode):
 			secondChild.type = type_checking(secondChild.children[0], secondChild.children[1])
 		elif (len(secondChild.children) == 1) and (type(secondChild) is AST.OpNode):
 			if secondChild.children[0].type != None:
 				secondChild.type = secondChild.children[0].type
-			elif secondChild.children[0].tok in vars_tab[currentContext]:
-				secondChild.type = vars_tab[currentContext][secondChild.children[0].tok]
+			elif secondChild.children[0].tok in vars_tab[context[contextcounter]]:
+				secondChild.type = vars_tab[context[contextcounter]][secondChild.children[0].tok]
 			else:
 				error = True
-		elif secondChild.tok in vars_tab[currentContext]:
-			secondChild.type = vars_tab[currentContext][secondChild.tok]
+		elif secondChild.tok in vars_tab[context[contextcounter]]:
+			secondChild.type = vars_tab[context[contextcounter]][secondChild.tok]
 
 	if (type(secondChild) is AST.FunctionExpressionNode):
 		if firstChild.type != None:
@@ -300,7 +305,7 @@ def type_checking(firstChild, secondChild):
 		error = True
 
 	if error:
-		print("There are some assignations/operations with different types in " + currentContext + " context.\nCompilation aborted.")
+		print("There are some assignations/operations with different types in " + context[contextcounter] + " context.\nCompilation aborted.")
 		sys.exit(0)
 
 if __name__ == "__main__":
