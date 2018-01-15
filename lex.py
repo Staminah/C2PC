@@ -61,7 +61,6 @@ tokens = (
     'DOUBLE_AMPERSAND',
     'DOUBLE_PIPE',
 
-
     # Complex tokens
     'ID',
     'FNUMBER',
@@ -140,7 +139,7 @@ def t_ID(t):
 
 def t_FNUMBER(t):
     # Nombres flottants
-    # ((0(?!\d))|([1-9]\d*)) :  Permet de s'assurer que le nombre commence soit par 0 tout seul ou alors un nombre quelconque
+    # ((0(?!\d))|([1-9]\d*)) : Permet de s'assurer que le nombre commence soit par 0 tout seul ou alors un nombre quelconque
     # (\.\d+) : Un point suivi d'au moins un ou plusieurs caractères numériques
     r'((0(?!\d))|([1-9]\d*))(\.\d+)'
     return t
@@ -217,7 +216,3 @@ if __name__ == "__main__":
         tok = lex.token()
         if not tok: break
         print("line %d: %s(%s)" % (tok.lineno, tok.type, tok.value))
-
-#  ---------------------------------------------------------------
-#  End of clex.py
-#  ---------------------------------------------------------------

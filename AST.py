@@ -1,3 +1,13 @@
+#  ---------------------------------------------------------------
+#  AST.py
+#
+#  Fleury Anthony, Hirschi Christophe, Schnaebele Marc
+#  Abstract Syntax Three for our C compiler
+#  15/01/2018
+#
+#  Original author : M. Amiguet (HE-Arc)
+#  ---------------------------------------------------------------
+
 ''' Petit module utilitaire pour la construction, la manipulation et la
 représentation d'arbres syntaxiques abstraits.
 
@@ -10,10 +20,15 @@ pas toujours optimal...
 
 import pydot
 
+#  ---------------------------------------------------------------
+#  NODE CLASSES
+#  ---------------------------------------------------------------
+
 class Node:
     count = 0
     node_type = 'Node (unspecified)'
     shape = 'ellipse'
+
     def __init__(self,children=None):
         self.ID = str(Node.count)
         Node.count+=1
@@ -23,9 +38,7 @@ class Node:
         else:
             self.children = [children]
         self.next = []
-
         self.type = None
-
 
     def addNext(self,next):
         self.next.append(next)
@@ -62,7 +75,7 @@ class Node:
                 if label:
                     edge.set_label(str(i))
                 dot.add_edge(edge)
-                #Workaround for a bug in pydot 1.0.2 on Windows:
+                # Workaround for a bug in pydot 1.0.2 on Windows:
                 #dot.set_graphviz_executables({'dot': r'C:\Program Files\Graphviz2.16\bin\dot.exe'})
             return dot
 
@@ -103,6 +116,7 @@ class ProgramNode(Node):
 
 class TokenNode(Node):
     node_type = 'token'
+
     def __init__(self, tok):
         Node.__init__(self)
         self.tok = tok
@@ -151,14 +165,13 @@ class ContinueNode(Node):
 
 class ComparatorNode(OpNode):
     node_type = 'ComparatorExpression'
-    pass
 
 class LogicalNode(OpNode):
     node_type = 'LogicalExpression'
-    pass
 
 class DeclarationNode(Node):
     node_type = 'DeclarationExpression'
+
     def __init__(self, tok):
         Node.__init__(self)
         self.tok = tok
@@ -188,6 +201,7 @@ class FunctionExpressionNode(DeclarationNode):
 
 class EntryNode(Node):
     node_type = 'ENTRY'
+
     def __init__(self):
         Node.__init__(self, None)
 
