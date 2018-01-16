@@ -166,10 +166,26 @@ def compile(self):
 		tabcounter -= 1
 	return pycode
 
+# Noeud de logique
+@addToClass(AST.LogicalNode)
+def compile(self):
+	pycode = ""
+	pycode += "(" + self.children[0].compile() + " "
+	pycode += self.op
+	pycode += " " + self.children[1].compile() + ")"
+	return pycode
+
 # Noeud de comparaison
 @addToClass(AST.ComparatorNode)
 def compile(self):
 	pycode = ""
+	# Gestion des types
+	if self.children[0].type == None and self.children[0].tok in vars_tab[context[contextcounter]]:
+		self.children[0].type = vars_tab[context[contextcounter]][self.children[0].tok]
+	elif self.children[1].type == None and self.children[1].tok in vars_tab[context[contextcounter]]:
+		self.children[1].type = vars_tab[context[contextcounter]][self.children[1].tok]
+	self.type = type_checking(self.children[0], self.children[1])
+	# Gestion du code python
 	pycode += "(" + self.children[0].compile() + " "
 	pycode += self.op
 	pycode += " " + self.children[1].compile() + ")"
