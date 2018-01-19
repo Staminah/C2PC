@@ -1,4 +1,6 @@
-void showHello()
+int add(int a, int b)
 {
-  int i;
+  return a + b;
 }
+
+int res = add(2, 4);

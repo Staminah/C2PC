@@ -12,10 +12,6 @@ import AST
 from lex import tokens
 
 precedence = (
-    ( 'left' , 'PLUS' ),
-	( 'left' , 'MINUS' ),
-	( 'left' , 'TIMES' ),
-	( 'left' , 'DIV' ),
     ('nonassoc', 'IFX'), # Hack de fou : http://epaperpress.com/lexandyacc/if.html
     ('nonassoc', 'ELSE'),
 )
@@ -324,11 +320,6 @@ def p_function_definition_01(p):
         p[2].setType(p[1])
         p[2].addChildren(p[3])
         p[0] = p[2]
-        # -- Suppr. des paramètres --
-        if (len(p[2].children) > 0):
-            if (type(p[2].children[0]) is AST.ParamListNode):
-                for c in p[2].children[0].children:
-                    func_name.pop(c.tok, None)
 
 def p_declaration_01(p):
     '''declaration : declaration_specifier init_declarator SEMICOLON'''
